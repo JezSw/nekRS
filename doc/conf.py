@@ -1,11 +1,14 @@
 from cgitb import html
+import subprocess, os
+
+subprocess.call('doxygen Doxyfile.in', shell=True)
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'NekRS'
-copyright = '2024, ANL et al'
-author = 'Jez Swann & ??????'
+copyright = '2024, UCHICAGO ARGONNE, LLC'
+author = ''
 
 extensions = [
     'breathe'
