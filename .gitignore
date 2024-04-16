@@ -9,5 +9,5 @@ plugin_config.cu
 .cache/
 
 doc/venv
-doc/doxygen/*/
-doc/sphinx/*/
+doc/doxygen
+doc/sphinx
