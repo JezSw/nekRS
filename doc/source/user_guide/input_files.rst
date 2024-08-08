@@ -33,7 +33,7 @@ The scope of this page is merely to introduce the format and purpose of the four
 files needed to set up a nekRS simulation. Much more detailed instructions are provided
 on the :ref:`FAQs <detailed>` page.
 
-.. _parameterFile:
+.. _param_file:
 
 Parameter File (.par)
 _____________________
@@ -892,6 +892,7 @@ properties.
 Finally, ``udf.div``
 allows specification of the thermal divergence term needed for the low Mach formulation.
 
+.. _usr_file:
 
 Legacy Option (.usr)
 ^^^^^^^^^^^^^^^^^^^^
