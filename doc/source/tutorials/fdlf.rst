@@ -197,8 +197,8 @@ are extracted via ``options.getArgs``.
 Boundary and initial conditions
 ...............................
 
-The boundary conditions are setup in ``velocityDirichletConditions``,  
-``scalarDirichletConditions`` and ``scalarNeumannConditions`` device functions
+The boundary conditions are setup in ``codedFixedValueVelocity``,  
+``codedFixedValueScalar`` and ``codedFixedGradientScalar`` device functions
 as shown below, where the highlighted lines indicate where the actual boundary condition
 is specified. The velocity and temperature are set to the analytic profiles given
 by Eqs. :eq:`fdlf_vel` and :eq:`fdlf_temp` and the heat flux is set to a constant value.
