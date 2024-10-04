@@ -25,3 +25,6 @@ References
     *Flow Measurement and Instrumentation* **52** 101-114 (2016)
 
 .. [Wilcox] Wilcox, D.C. "Turbulence Modeling for CFD," *DCW Industries* (2006)
+
+.. [Mellen2000] Mellen, C. P., Fröhlich, J., Rodi, W. "Large-eddy simulation of the flow over periodic hills." *16th
+    IMACS World Congress*, Lausanne, Switzerland.
