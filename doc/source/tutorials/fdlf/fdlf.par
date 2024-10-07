@@ -9,12 +9,14 @@ writeInterval = 2000
 residualTol = 1e-4
 
 [VELOCITY]
+boundaryTypeMap = v, O, sym, w, none, none
 density = 1.2        #kg/m3
 viscosity = 0.00002  #kg/m-s
 
-[TEMPERATURE]
-rhoCp = 1200.0       #J/m3-K
-conductivity = 0.025 #W/m-K
+[SCALAR00]
+boundaryTypeMap = t, O, I, f, none, none
+density = 1200.0       #J/m3-K
+diffusivity = 0.025 #W/m-K
 
 [CASEDATA]
 height = 0.01
