@@ -1,7 +1,7 @@
 [GENERAL]
 polynomialOrder = 7
 stopAt = endTime
-endTime  = 1
+endTime  = 200
 variableDT = yes
 dt = targetCFL = 0.4 + initial=1e-1
 checkpointControl = steps
