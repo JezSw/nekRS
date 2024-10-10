@@ -3,38 +3,88 @@
 Models and Source Terms
 =======================
 
-.. nekRS contains several "plugins" that provide both physics models and postprocessing
-.. capabilities. nekRS's :term:`RANS` and low-Mach models, for instance, are provided as
-.. plugins. While significant attention is not provided to most of the inner source code structure of nekRS,
-.. these plugins require more in-depth explanation because their usage requires non-trivial
-.. modifications to the ``.udf`` files. Before reading this page, first consult
-.. :ref:`User-Defined Host Functions (.udf) <udf_functions>` so that you have the necessary
-.. background on each of the ``.udf`` functions that will be discussed.
+The :ref:`User-Defined Host Functions (.udf) <udf_functions>` file in NekRS provides the necessary 
+and sufficient interface to load most of the physics models (and postprocessing capabilities).
+For instance, the :ref:`RANS <rans_models>` and :ref:`lowMach compressible <low_mach>` models available in nekRS are
+loaded by including corresponding header files in ``.udf`` and by calling the appropriate functions from the standard 
+functions in ``.udf``. Appropriate boundary conditions for the momentum and scalar transport equations are specified 
+in the :ref:`okl block <okl_block>` (or  in the included ``.oudf`` file). Further, any custom source terms that may need to be added
+to the momentum or scalar equations are also interfaced through the ``.udf`` file. 
+Before proceeding it is, therefore, highly recommended that users familiarize themselves with all components of :ref:`.udf file <udf_functions>`. 
 
 Turbulence models
 -----------------
+
+Large Eddy Simulation (LES)
+"""""""""""""""""""""""""""
+
+High pass filter relaxation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 RANS models
 """""""""""
 
 .. _ktau_model:
 
-:math:`k`-:math:`\tau` Model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. Note::
+  RANS model requires two passive scalar fields which must be specified in control parameters ``(.par)``
+  file. For details on how to setup the ``.par`` file, refer to the :ref:`RANS Channel tutorial <tutorial_rans>`
 
-The :term:`RANS` :math:`k`-:math:`\tau` plugin is available in the ``src/plugins/RANSktau.hpp``
-header file. In order to add the :math:`k`-:math:`\tau` model to youddisplr case, you need
-to include this file in your ``.udf`` file and manually add all the requisite parts of
-the :math:`k`-:math:`\tau` methodology. Unless otherwise noted, all code snippets in
-this section are placed in the ``.udf`` file.
+The essential routines for the :term:`RANS` models in NekRS are available in the namespace in 
+``src/nrs/plugins/RANSktau.hpp``. The default RANS model in nekRS is the :math:`k`-:math:`\tau` model [Tombo2024]_.
+Details on the formulation of the :math:`k`-:math:`\tau` can be found :ref:`here <rans_models>`.
 
-First, add the necessary include file at the top
+To use the :term:`RANS` model in nekRS, first add the necessary include file at the top
 of your ``.udf`` file:
 
 .. code-block:: cpp
 
-  #include "udf.hpp"
-  #include "plugins/RANSktau.hpp"
+  #include "RANSktau.hpp"
+
+The header file will make the required :term:`RANS` subroutines accessible in the ``.udf`` file 
+which add the necessary source terms for the :math:`k` and :math:`\tau` transport equations and 
+modify the diffusion operator in the momentum equation.
+
+Further, in the ``UDF_Setup()`` subroutine, add the following code snippet to initialize the 
+:term:`RANS` model,
+
+.. code-block:: cpp
+  
+  void UDF_Setup()
+  {
+    nrs->userProperties = &uservp;
+    nrs->userScalarSource = &userq;
+
+    const auto ktauFieldStart = 1;
+
+    RANSktau::setup(ktauFieldStart);
+  }
+
+``RANSktau::`` is the namespace declared in the header file ``RANSktau.hpp`` which contains all required
+:term:`RANS` subroutine call definitions.
+
+``nrs->userProperties`` and ``nrs->userScalarSource`` are the pointer variables to internal subroutines in nekRS
+which are used to define the user specified transport properties and source terms for the passive scalar 
+equation, respectively. As in the above code, these are assigned the pointers to ``uservp`` and ``userq`` routines
+which must be defined in the ``.udf`` file as follows,
+
+.. code-block:: cpp
+
+  void uservp(double time)
+  {
+    RANSktau::updateProperties();
+  }
+
+  void userq(double time)
+  {
+    RANSktau::updateSourceTerms();
+  }
+
+The `updateProperties()` call computes the diffusion coefficients for the momentum and :math:`k`-:math:`\tau`
+equations (see :ref:`RANS theory <rans_models>` for details on RANS model equations),
+
+.. math::
+  \mu + \mu_t
 
 This is required in order to access the methods in the :term:`RANS` plugin. The
 following sections then each describe a step in the :term:`RANS` model setup using the plugin.
@@ -289,20 +339,30 @@ then the :math:`k` scalar should be positioned as the second scalar, and ``ifld 
   :math:`k` passive scalar and ``ifld + 1`` corresponds to the :math:`\tau` passive
   scalar. Be sure to order the scalars in the input file to respect this assumption.
 
-Large Eddy Simulation (LES)
-"""""""""""""""""""""""""""
 
-High pass filter relaxation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Low-Mach Model
---------------
+Low-Mach Compressible Model
+---------------------------
 
-Generic Source Terms
+Custom Source Terms
 --------------------
 
-Momentum
-""""""""
+Momentum Equation
+"""""""""""""""""
 
-Scalars
-"""""""
+Explicit Source Terms
+^^^^^^^^^^^^^^^^^^^^^
+
+Implicit Source Terms
+^^^^^^^^^^^^^^^^^^^^^
+
+Scalar Equations
+""""""""""""""""
+
+Explicit Source Terms
+^^^^^^^^^^^^^^^^^^^^^
+
+Implicit Source Terms
+^^^^^^^^^^^^^^^^^^^^^
+
+

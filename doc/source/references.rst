@@ -25,3 +25,5 @@ References
     *Flow Measurement and Instrumentation* **52** 101-114 (2016)
 
 .. [Wilcox] Wilcox, D.C. "Turbulence Modeling for CFD," *DCW Industries* (2006)
+
+.. [Tombo2024] Tomboulides, Ananias, Nadish Saini, Dillon Shaver, Aleksandr Obabko, Haomin Yuan, Elia Merzari, and Paul Fischer. "A Robust Spectral Element Implementation of the K–Τ Rans Model in Nek5000/Nekrs." *Available at SSRN 4785448.* (2024)

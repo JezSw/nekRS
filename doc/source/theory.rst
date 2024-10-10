@@ -116,6 +116,8 @@ and :math:`\alpha` is the thermal diffusivity,
 
   \alpha\equiv\frac{k_0}{\rho_0 C_{p,0}}
 
+.. _low_mach:
+
 Low-Mach Partially-Compressible Model
 -------------------------------------
 
