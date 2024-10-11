@@ -95,3 +95,9 @@ Glossary
     UIUC
       The University of Illinois at Urbana-Champaign
 
+    TKE
+      Turbulent kinetic energy
+
+    EOS
+      Equation of state
+

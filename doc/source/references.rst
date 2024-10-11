@@ -27,3 +27,9 @@ References
 .. [Wilcox] Wilcox, D.C. "Turbulence Modeling for CFD," *DCW Industries* (2006)
 
 .. [Tombo2024] Tomboulides, Ananias, Nadish Saini, Dillon Shaver, Aleksandr Obabko, Haomin Yuan, Elia Merzari, and Paul Fischer. "A Robust Spectral Element Implementation of the K–Τ Rans Model in Nek5000/Nekrs." *Available at SSRN 4785448.* (2024)
+
+.. [Tombo1997] Tomboulides, A. G., J. C. Y. Lee, and S. A. Orszag. "Numerical simulation of low Mach number reactive flows". *Journal of Scientific Computing 12: 139-167.* (1997)
+
+.. [Paulucci1982] Paulucci, S. "On the filtering of sound from the navier-stokes equations, sandia national labs." *Technical Report. Sandia National Laboratories* (1982)
+
+.. [Sutherland1893] Sutherland, William. "LII. The viscosity of gases and molecular force." *The London, Edinburgh, and Dublin Philosophical Magazine and Journal of Science 36.223 507-531.* (1893)
