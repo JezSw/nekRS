@@ -176,7 +176,7 @@ In non-dimensional form, considering the properties at reference conditions for 
 The expansion coefficients, derived from the EOS, in non-dimensional form are,
 
 .. math::
-  \beta_T^\dagger = \frac{1}{\beta_0 T_0 T^\dagger} \,\, \kappa^\dagger = \frac{1}{\kappa_0 p_0 p_t^\dagger}
+  \beta_T^\dagger = \frac{1}{T^\dagger} \,\, \kappa^\dagger = \frac{1}{p_t^\dagger}
 
 The resulting governing equations for ideal gas assumption, thus, are,
 
@@ -187,6 +187,9 @@ The resulting governing equations for ideal gas assumption, thus, are,
   
 .. note::
   For a calorically perfect ideal gas, :math:`c_p` will be constant and non-dimensional :math:`c_p\dagger = 1`.
+
+.. note::
+  Another often used assumption is to consider dynamic viscosity and thermal conductivity independent of temperature (constant). Thus, :math:`\mu^\dagger` and :math:`k^\dagger` will both be unity, further simplifying the above equations.
 
 
 Stokes Equations
