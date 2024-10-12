@@ -19,5 +19,5 @@ help:
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-livehtml:
-	sphinx-autobuild "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+livehtml: html
+	SKIPDOXYGEN=1 sphinx-autobuild --no-initial --re-ignore '.*\.swp' --ignore source/doxygen "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

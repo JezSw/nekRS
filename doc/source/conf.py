@@ -19,7 +19,7 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
+import os
 from os import makedirs, path
 from datetime import date
 import subprocess
@@ -235,5 +235,8 @@ def build_doxygen(app):
 
 
 def setup(app):
-    app.connect("builder-inited", build_doxygen)
+    skipDoxygen = os.getenv("SKIPDOXYGEN")
+    if skipDoxygen is None or skipDoxygen==0:
+        app.connect("builder-inited", build_doxygen)
+
     pass
