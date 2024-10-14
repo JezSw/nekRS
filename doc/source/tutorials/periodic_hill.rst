@@ -66,6 +66,7 @@ In NekRS we can specify this through ``UDF_Setup`` in the ``.udf`` file:
 .. literalinclude:: ./periodic_hill/hillp.udf
    :language: c++
    :lines: 12-23
+   :emphasize-lines: 10
 
 By modifying the mesh in ``UDF_Setup``, the modification is applied to the GLL points directly. 
 This allows the mesh to conform to the specified profile to :math:`N^{th}`-order accuracy.
