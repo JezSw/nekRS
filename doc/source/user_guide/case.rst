@@ -128,6 +128,12 @@ This provides a convenient way to set up a large eddy simulation (LES) using the
 (i.e., high-pass filter), or alternatively, to introduce the artificial viscosity
 (``avm``) to a solution field.
 
+For advanced users, nekRS offers additional pressure preconditioners and coarse 
+mesh solvers that can be explored and fine-tuned through parameters such as 
+``preconditioner``, ``coarseGridDiscretization``, and ``smootherType`` to 
+optimize simulation efficiency. The default settings, however, provide a well-balanced 
+configuration suitable for basic users.
+ 
 Generally, most ``.par`` settings are not saved to a data structure, so throughout the code
 base, whenever information from the ``.par`` file is needed, it is simply
 extracted on-the-fly via the ``options`` structure.
