@@ -124,6 +124,7 @@ Low-Mach Compressible Model
 The low-Mach compressible equations are derived from the fully compressible Navier-Stokes equations by filtering the acoustic waves, obtained by splitting the pressure into thermodynamic, :math:`p_t`, and hydrodynamic components :math:`p_1`. The resulting low-Mach compressible governing equations, in dimensional form, are (for complete derivation refer [Tombo1997]_ or [Paulucci1982]_)
 
 .. math::
+
   \nabla \cdot \vec{v} &= \beta_T \frac{D T}{D t} - \kappa \frac{D p_{t}}{D t} = Q\\
   \rho \left(\frac{\partial \vec{v}}{\partial t} + \vec{v} \cdot \nabla \vec{v} \right) &= -\nabla p_1 + \nabla \cdot \mu \left(2 \boldsymbol{\underline{S}} - \frac{2}{3} Q \boldsymbol{\underline{I}} \right) + \rho \vec{f} \\
   \rho c_p \frac{D T}{D t} &= \nabla \cdot k \nabla T +  \frac{D p_t}{D t}
@@ -131,13 +132,16 @@ The low-Mach compressible equations are derived from the fully compressible Navi
 Thermodynamic pressure is the leading order, spatially invariant, term in pressure expansion while hydrodynamic pressure is the first order term. :math:`\beta_T` is the isobaric expansion coefficient and :math:`\kappa` is the isothermal expansion coefficient,
 
 .. math::
+
   \beta_T &= \frac{1}{\rho} \left.\frac{D \rho}{D t}\right|_p \\
   \kappa &= \frac{1}{\rho} \left.\frac{D \rho}{D t}\right|_T
 
 .. note::
+
   :math:`D \bullet/ Dt` is the material derivative. Since :math:`p_t` is spatially invariant, the convective component of its material derivative is zero. Therefore, :math:`D p_t/Dt = dp_t/dt`
 
 .. note::
+
   For an open domain, the thermodynamic pressure is both spatially and temporally constant, i.e. :math:`dp_t/dt = 0`. This further simplifies the above equation system. However, for a closed system, the thermodynamic pressure, although uniform in space, is subject to changing temporally to enforce mass conservation.
 
 The equation system above is not closed and an equation of state (:term:`EOS`) is required to relate the density to the thermodynamic quantities, :math:`\rho = f(p_t,T)`. Further, dynamic viscosity and thermal conductivity also need to be provided by constitutive relations (e.g., Sutherland's law for gases [Sutherland1893]_).
@@ -145,15 +149,30 @@ The equation system above is not closed and an equation of state (:term:`EOS`) i
 Introducing the non-dimensional variables as follows,
 
 .. math::
+
   \vec{v}^\dagger = \frac{\vec{v}}{U}; \,\, T^\dagger = \frac{T}{T_0}; \,\, \vec{x}^\dagger = \frac{\vec{x}}{L};\,\, p_1^\dagger = \frac{p_1}{\rho U^2};\,\, p_t^\dagger = \frac{p_t}{p_0};\,\, t^\dagger = \frac{t U}{L}; \vec{f}^\dagger = \frac{\vec{f}}{f_0} \\
   \rho^\dagger = \frac{\rho}{\rho_0}; \,\, c_p^\dagger = \frac{c_p}{c_{p0}}; \,\, k^\dagger =\frac{k}{k_0}; \,\, \mu^\dagger = \frac{\mu}{\mu_0}; \,\, \beta_T^\dagger = \frac{\beta_T}{\beta_0}; \,\, \kappa^\dagger = \frac{\kappa}{\kappa_0} 
 
-we can write the low-Mach governing equations in non-dimensional form as,
+the low-Mach governing equations are obtained as follows. The continuity equation: 
 
 .. math::
-  \nabla \cdot \vec{v}^\dagger &= \beta_0 T_0 \beta_t^\dagger \frac{D T^\dagger}{D t^\dagger} - \kappa_0 p_0 \kappa^\dagger \frac{d p_t^\dagger}{dt^\dagger} = Q^\dagger \\
-  \rho^\dagger \left(\frac{\partial \vec{v}^\dagger}{\partial t^\dagger} + \vec{v}^\dagger \cdot \nabla \vec{v}^\dagger\right) &= - \nabla p_1^\dagger + \nabla \cdot \frac{\mu^\dagger}{Re} \left(2 \boldsymbol{\underline{S}}^\dagger - \frac{2}{3} Q^\dagger \boldsymbol{\underline{I}}\right) + \frac{1}{Fr} \rho^\dagger \vec{f}^\dagger \\
-  \rho^\dagger c_p^\dagger \frac{D T^\dagger}{D t^\dagger} &= \nabla \cdot \frac{k^\dagger}{Re Pr} \nabla T^\dagger + \frac{p_0}{\rho_0 c_{p0} T_0} \frac{d p_t^\dagger}{d t^\dagger}
+  :label: lm_real_cont
+
+  \nabla \cdot \vec{v}^\dagger = \beta_0 T_0 \beta_t^\dagger \frac{D T^\dagger}{D t^\dagger} - \kappa_0 p_0 \kappa^\dagger \frac{d p_t^\dagger}{dt^\dagger} = Q^\dagger
+
+mometum equation,
+
+.. math::
+  :label: eq:lm_real_momentum
+
+  \rho^\dagger \left(\frac{\partial \vec{v}^\dagger}{\partial t^\dagger} + \vec{v}^\dagger \cdot \nabla \vec{v}^\dagger\right) = - \nabla p_1^\dagger + \nabla \cdot \frac{\mu^\dagger}{Re} \left(2 \boldsymbol{\underline{S}}^\dagger - \frac{2}{3} Q^\dagger \boldsymbol{\underline{I}}\right) + \frac{1}{Fr} \rho^\dagger \vec{f}^\dagger
+
+and energy equation,
+
+.. math::
+  :label: eq:lm_real_energy
+
+  \rho^\dagger c_p^\dagger \frac{D T^\dagger}{D t^\dagger} = \nabla \cdot \frac{k^\dagger}{Re Pr} \nabla T^\dagger + \frac{p_0}{\rho_0 c_{p0} T_0} \frac{d p_t^\dagger}{d t^\dagger}
 
 where :math:`U` and :math:`L` are the characteristic velocity and length scales. :math:`f_0` is reference magnitude of body force. :math:`p_0` and :math:`T_0` are the reference pressure and temperature, respectively, and :math:`\rho_0, \mu_0, c_{p0}, k_0, \beta_0, \kappa_0` are the corresponding fluid properties (density, dynamic viscosity, specific heat at contant pressure, conductivity, isobaric expansion coefficient and isothermal expansion coefficient, respectively) at reference conditions. 
 
@@ -165,30 +184,38 @@ Low-Mach Equations with Ideal Gas Assumption
 The :term:`EOS` for an ideal gas is,
 
 .. math::
+
   p_t = \rho R T; \,\, c_p-c_v = R \equiv \frac{R}{c_p} = \frac{\gamma - 1}{\gamma}
 
 where :math:`R` is the ideal gas constant, :math:`c_v` is the specific heat at constant volume and :math:`\gamma = c_p/c_v` is the isentropic expansion factor.
 In non-dimensional form, considering the properties at reference conditions for non-dimensionalization (i.e., :math:`p_0 = \rho_0 R T_0` and :math:`\frac{R}{c_{p0}}= \frac{\gamma_0-1}{\gamma_0}`), the :term:`EOS` is simply written,
 
 .. math::
+
   p_t^\dagger = \rho^\dagger T^\dagger
 
 The expansion coefficients, derived from the EOS, in non-dimensional form are,
 
 .. math::
+
   \beta_T^\dagger = \frac{1}{T^\dagger} \,\, \kappa^\dagger = \frac{1}{p_t^\dagger}
 
 The resulting governing equations for ideal gas assumption, thus, are,
 
 .. math::
+
+  :label: lm_ideal
+
   \nabla \cdot \vec{v}^\dagger &= \frac{1}{T^\dagger} \frac{D T^\dagger}{D t^\dagger} - \frac{1}{p_t^\dagger} \frac{d p_t^\dagger}{dt^\dagger} = Q^\dagger \\
   \rho^\dagger \left(\frac{\partial \vec{v}^\dagger}{\partial t^\dagger} + \vec{v}^\dagger \cdot \nabla \vec{v}^\dagger\right) &= - \nabla p_1^\dagger + \nabla \cdot \frac{\mu^\dagger}{Re} \left(2 \boldsymbol{\underline{S}}^\dagger - \frac{2}{3} Q^\dagger \boldsymbol{\underline{I}}\right) + \frac{1}{Fr} \rho^\dagger \vec{f}^\dagger \\
   \rho^\dagger c_p^\dagger \frac{D T^\dagger}{D t^\dagger} &= \nabla \cdot \frac{k^\dagger}{Re Pr} \nabla T^\dagger + \frac{\gamma_0-1}{\gamma_0} \frac{d p_t^\dagger}{d t^\dagger}
   
 .. note::
+
   For a calorically perfect ideal gas, :math:`c_p` will be constant and non-dimensional :math:`c_p\dagger = 1`.
 
 .. note::
+
   Another often used assumption is to consider dynamic viscosity and thermal conductivity independent of temperature (constant). Thus, :math:`\mu^\dagger` and :math:`k^\dagger` will both be unity, further simplifying the above equations.
 
 

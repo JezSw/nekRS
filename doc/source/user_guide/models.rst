@@ -129,6 +129,40 @@ The final step in the model setup for the :math:`k`-:math:`\tau` :term:`RANS` mo
 Low-Mach Compressible Model
 ---------------------------
 
+The low-Mach compressible model in NekRS is available through the routines defined in ``src/nrs/plugins/lowMach.hpp`` which must be included in the ``.udf`` file. As default, this user guide assumes, and it is strongly recommended, that the low-Mach equations are solved in non-dimensional format. However, appropriate instructions are included herein for dimensional solver. For details on the low-Mach governing equation refer the :ref:`theory section <low_mach>`.
+
+Get started with including the header file at the top of your case ``.udf`` file and declaring required global occa arrays,
+
+.. code-block:: cpp
+
+  #include "lowMach.hpp"
+  
+  deviceMemory<dfloat> o_beta;
+  deviceMemory<dfloat> o_kappa;
+
+``o_beta`` is the global cache for storing the local isobaric expansion coefficients for all GLL points, while the ``o_kappa`` array stores the isothermal expansion coefficient. 
+Next, in the ``UDF_Setup()`` the following code snippet is required,
+
+.. code-block:: cpp
+
+  void UDF_Setup()
+  {
+    nrs->userProperties = &uservp;
+    nrs->userScalarSource = &userq;
+    nrs->userDivergence = &userqtl;
+
+    o_beta.resize(nrs->fieldOffset);
+    o_kappa.resize(nrs->fieldOffset);
+
+    double gamma = 1.4;
+    double alphaRef = (gamma - 1.0) / gamma;
+
+    lowMach::setup(alpheRef, o_beta, o_kappa);
+  }
+
+``nrs->userProperties``, ``nrs->userScalarSource`` and ``nrs->userDivergence`` are internal nekRS pointers to provide an interface to user routines for specifying transport properties, source terms for scalar equation and (thermal) divergence for the right hand side of continuity equation, respectively.
+
+
 Custom Source Terms
 --------------------
 
