@@ -82,8 +82,8 @@ The valid sections for setting up a nekRS simulation are:
 
 Each of the keys and value types are described below. 
 
-nekRS supports both conventional heterogeneous computing architectures and accelerated 
-computing using GPUs. In the ``OCCA`` section, users can select various backend options, 
+nekRS supports both traditional CPU-based architectures and accelerated 
+computing on GPUs. In the ``OCCA`` section, users can select various backend options, 
 such as the ``serial`` mode for CPU-only computations, ``CUDA`` for accelerated 
 computing with Nvidia GPUs, or ``HIP`` for AMD GPUs.
 
@@ -125,7 +125,7 @@ and ``conductivity`` for ``[TEMPERATURE]``.
 
 The ``.par`` file also allows users to apply ``regularization`` to simulations. 
 This provides a convenient way to set up a large eddy simulation (LES) using the ``hpfrt``
-(i.e., high-pass filter), or alternatively, to introduce the artificial viscosity
+(i.e., high-pass filter), or to introduce the artificial viscosity
 (``avm``) to a solution field.
 
 For advanced users, nekRS offers additional pressure preconditioners and coarse 
@@ -281,7 +281,7 @@ exact values at a specified time point.
 UDF_Setup0
 """"""""""
 
-This user-defined function is passed the nekRS :term:`MPI` communicator ``comm`` and a data
+This user-defined function is passed to the nekRS :term:`MPI` communicator ``comm`` and a data
 structure containing all of the user-specified simulation options, ``options``. This function is
 called once at the beginning of the simulation *before* initializing the nekRS internals
 such as the mesh, solvers, and solution data arrays. Because virtually no aspects of
