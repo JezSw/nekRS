@@ -33,3 +33,9 @@ References
 .. [Paulucci1982] Paulucci, S. "On the filtering of sound from the navier-stokes equations, sandia national labs." *Technical Report. Sandia National Laboratories* (1982)
 
 .. [Sutherland1893] Sutherland, William. "LII. The viscosity of gases and molecular force." *The London, Edinburgh, and Dublin Philosophical Magazine and Journal of Science 36.223 507-531.* (1893)
+
+.. [Stolz2005] Stolz, S., Schlatter, P., and Kleiser, L., "High-pass filtered eddy-viscosity models for large-eddy simulations of transitional and turbulent flow", *Physics of Fluids, 17, 065103. `doi.org/10.1063/1.1923048 <https://doi.org/10.1063/1.1923048>`* (2005)
+
+.. [Stolz2001] Stolz, S., Adams, N. A. and Kleiser, L., "An approximate deconvolution model for large-eddy simulation with application to incompressible wall-bounded flows", *Physics of Fluids, 13, no. 4, pp. 997--1015. `doi.org/10.1063/1.1350896 <https://doi.org/10.1063/1.1350896>`* (2005)
+
+.. [Schlatter2006] Schlatter, P., Stolz, S., and Kleiser, L., "Analysis of the SGS energy budget for deconvolution- and relaxation-based models in channel flow", in *Direct and Large-Eddy Simulation VI, pp. 135--142, Springer, Dordrecht, 2006. `doi.org/10.1007/978-1-4020-5152-2_15 <https://doi.org/10.1007/978-1-4020-5152-2_15>`* (2005)

@@ -18,8 +18,112 @@ Turbulence models
 Large Eddy Simulation (LES)
 """""""""""""""""""""""""""
 
+In NekRS, the sub-grid scale dissipation for :term:`LES` simulations is applied by means of a stabilizing filter, which drains energy from the solution at the lowest resolved wavelengths, effectively acting as a sub-grid scale model.
+A filter is necessary to run an LES turbulence model in NekRS and spectral methods in general, as they lack the numerical dissipation necessary to stabilize a so-called "implicit LES" method, which relies on a lack of resolution to provide dissipation.
+
+The filter is constructed by means of a convolution operator applied on an element-by-element basis.
+Functions in the SEM are locally represented on each element as :math:`N^{th}`-order tensor-product Lagrange polynomials in the reference element, :math:`\hat\Omega\equiv[-1,1]^3`.
+This representation can readily be expressed as a tensor-product of Legendre polynomials, :math:`P_k`.
+For example, consider
+
+.. math::
+
+  u(x)=\sum^N_{k=0}\hat u_k P_k(x)
+
+:Reminder:
+  :math:`N` is the polynomial order, :math:`N=` ``lx1`` :math:`-1`.
+
+where :math:`u(x)` is any polynomial of degree :math:`N` on :math:`[-1,1]`.
+As each Legendre polynomial corresponds to a wavelength on :math:`[-1,1]`, a filtered variant of :math:`u(x)` can be constructed from
+
+.. math::
+
+  \tilde u(x)=\sum^N_{k=0}\sigma_k\hat u_k P_k(x).
+
+By choosing appropriate values for the weighting factors, :math:`\sigma_k`, we can control the characteristics of the filter.
+In *NekRS* we select a filter cutoff ratio, :math:`(N'+1)/(N+1)`, which can also be equivalently expressed as a number of filtered modes, :math:`N_{modes}=N-N'`.
+Weights are chosen as
+
+.. math::
+
+  \sigma_k = 1\qquad\text{for}\qquad k\le N'\\
+  \sigma_k < 1\qquad\text{for}\qquad k> N'
+
+to construct a low-pass filter. 
+An example is shown below in :numref:`fig:filter`.
+The signal produced by this filter would have the highest Legendre mode (shortest wavelength) completely removed with the next two highest modes significantly diminished.
+However, if the energy of the input signal is fully resolved on the first six modes, the filter would not affect the signal at all.
+
+.. _fig:filter:
+
+.. figure:: filter/filter.png
+   :align: center
+   :figclass: align-center
+   :alt: filter
+
+   Example of a strong low-pass filter.
+
+To construct the filter on a three-dimensional element, we define :math:`F` as the matrix operation that applies for this one-dimensional low-pass filter.
+From there, the convolution operator representing the three-dimensional low-pass filter, :math:`(G*)`, on the reference element, :math:`\hat\Omega`, is given by the Kronecker product :math:`F \otimes F \otimes F`
+
+.. math::
+
+  {\bf \tilde u} = G * {\bf u} = (F \otimes F \otimes F) {\bf u}.
+
+.. Warning::
+
+  The filtered wavelengths depend on the local element size, so the filtering operation is **NOT** necessarily uniform across the domain.
+
 High pass filter relaxation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The high-pass filter in *NekRS* is based on a method described by Stolz, Schlatter, and Kleiser [Stolz2005]_.
+In the high-pass filter method, the convolution operator described above is used to obtain a low-pass filtered signal.
+The high-pass filter term is then constructed from the difference between the original signal and the low-pass filtered signal.
+For any scalar, this term has the form
+
+.. math::
+
+  \chi\left(u-\tilde u\right)
+
+where :math:`u` is the original signal, :math:`\tilde u = G*u` is the low-pass filtered signal, and :math:`\chi` is a proportionality constant.
+In polynomial space, this term is only non-zero for the last few Legendre modes, :math:`k>N'`.
+It is subtracted from the RHS of the momentum, energy, and scalar transport equations, respectively
+
+.. math::
+  \frac{\partial \vec{u}}{\partial t}+{\vec{u}}\cdot\nabla{\vec{u}} &=-\nabla p+\frac{1}{Re}\nabla^2{\vec{u}}-\chi\left({\vec{u}}-G*{\vec{u}}\right)\\
+  \frac{\partial T}{\partial t}+{\vec{u}}\cdot\nabla T &= \frac{1}{Pe}\nabla^2 T - \chi\left(T-G*T\right)\\
+  \frac{\partial\phi_i}{\partial t} +{\vec{u}}\cdot\nabla\phi_i &= \frac{1}{ReSc} \nabla^2\phi_i -\chi\left(\phi_i-G*\phi_i\right)
+
+
+and acts to provide the necessary drain of energy out of the discretized system.
+
+The high-pass filter can be invoked by setting the ``regularization=hpfrt`` key in the ``[GENERAL]`` section of the ``.par`` file.
+The cutoff ratio used in the convolution operator, :math:`(G*)`, is controlled by adding the ``nModes`` option to the ``regularization`` key.
+
+The convolution operation used to construct the filtered signal, :math:`\tilde u`, completely removes the highest Legendre mode :math:`\sigma_N = 0`.
+The coefficients for the subsequent lower modes decrease parabolically until :math:`\sigma_{N'}=1`.
+This corresponds to a strong low-pass filtering operation, similar to the one shown in :numref:`fig:filter`.
+
+The overall strength of the high-pass filter is controlled by the proportionality coefficient, :math:`\chi`, which is set by adding the ``scalingCoeff`` option to the ``regularization`` key.
+
+.. math::
+
+  \chi = {\tt filterWeight}
+
+Typical values for this are :math:`5\le\chi\le10`, which drains adequate energy to stabilize the simulations.
+
+The high-wavenumber relaxation of the high-pass filter model is similar to the approximate deconvolution approach [Stolz2001]_.
+It is attractive in that it can be tailored to directly act on marginally resolved modes at the grid scale.
+The approach allows good prediction of transitional and turbulent flows with minimal sensitivity for model coefficients [Schlatter2006]_.
+Furthermore, the high-pass filters enable the computation of the structure function in the filtered or HPF structure-function model in all spatial directions even for inhomogeneous flows, removing the arbitrariness of special treatment of selected (e.g. wall-normal) directions.
+
+Generally recommended settings, specified in ``.par`` file, are as follows
+
+.. code-block:: ini
+
+   [GENERAL]
+   regularization = hpfrt + nModes=1 + scalingCoeff=10
 
 RANS models
 """""""""""

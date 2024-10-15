@@ -101,3 +101,6 @@ Glossary
     EOS
       Equation of state
 
+    LES
+      Large Eddy Simulation
+
