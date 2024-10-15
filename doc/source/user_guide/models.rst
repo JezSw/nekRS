@@ -157,10 +157,172 @@ Next, in the ``UDF_Setup()`` the following code snippet is required,
     double gamma = 1.4;
     double alphaRef = (gamma - 1.0) / gamma;
 
-    lowMach::setup(alpheRef, o_beta, o_kappa);
+    lowMach::setup(alphaRef, o_beta, o_kappa);
   }
 
-``nrs->userProperties``, ``nrs->userScalarSource`` and ``nrs->userDivergence`` are internal nekRS pointers to provide an interface to user routines for specifying transport properties, source terms for scalar equation and (thermal) divergence for the right hand side of continuity equation, respectively.
+``nrs->userProperties``, ``nrs->userScalarSource`` and ``nrs->userDivergence`` are internal nekRS pointers to provide an interface to user routines for specifying transport properties, source terms for scalar equation and (thermal) divergence for the right hand side of continuity equation, respectively. 
+``uservp``, ``userq`` and ``userqtl`` are the corresponding routines to be defined in the ``.udf`` file, described below. 
+
+The essential call in ``UDF_Setup()`` is ``lowMach::setup`` which initializes the required internal functions and arrays for the low-Mach compressible model. 
+It requires three arguments. 
+First, ``alpharef`` is the coefficient of the time derivative of the thermodynamic pressure, :math:`\frac{dp_t\dagger}{dt^\dagger}`, source term in the energy equation (see :ref:`theory section <low_mach>`).
+
+.. note::
+  
+  For real gases ``alpharef`` :math:`= \frac{p_0}{\rho_0 c_{p0} T_0}`, while for ideal gas assumption ``alpharef`` :math:`= \frac{\gamma_0 - 1}{\gamma_0}`, where :math:`\gamma_0` is the isentropic expansion coefficient (1.4 in the above example).
+
+.. note::
+  :math:`p_0` and :math:`T_0` are the pressure and temperature at reference conditions.
+
+.. warning::
+
+  For solving the low-Mach equations in dimensional format, ``alpharef`` must be unity.
+
+The remaining arguments to the ``lowMach::setup`` call are the pointers to the ``o_beta`` and ``o_kappa`` arrays. 
+Memory allocation for the ``o_beta`` and ``o_kappa`` arrays must be done using the ``resize`` functions and their extent must be equal to ``nrs->fieldOffset``, which is the total number of GLL points.
+
+The required transport properties and the expansion coefficients arrays are populated in the ``uservp`` routine,
+
+.. code-block:: cpp
+
+  void uservp(double time)
+  {
+    auto mesh = nrs->mesh;
+    auto cds = nrs->cds;
+
+    fillProp(mesh->Nelements,
+             nrs->fieldOffset,
+             nrs->cds->fieldOffset[0],
+             nrs->p0th[0],
+             cds->o_S,
+             nrs->o_prop,
+             cds->o_prop,
+             o_beta,
+             o_kappa)
+  }
+
+``mesh`` and ``cds`` are temporary pointers to the ``nrs->mesh`` and ``nrs->cds`` objects, which make referencing the object members easier subsequently.
+``fillProp`` is a kernel which has to be defined in the :ref:`okl block <okl_block>` section of ``.udf`` file to populate the transport property arrays for the fluid, ``nrs->o_prop``, and temperature, ``cds->o_prop``, equations and also the expansion coefficient arrays. 
+The details of the ``fillProp`` kernel are problem dependent. An example for ideal gas assumption is shown below.
+
+.. code-block:: cpp
+
+  #ifdef __okl__
+
+  @kernel void fillProp(const dlong Nelements,
+                        const dlong uOffset,
+                        const dlong sOffset,
+                        const dfloat p0th,
+                        @restrict const dfloat *TEMP,
+                        @restrict const dfloat *UPROP,
+                        @restrict const dfloat *SPROP,
+                        @restrict const dfloat *BETA,
+                        @restrict const dfloat *KAPPA)
+  {
+    for (dlong e = 0; e < Nelements; ++e; @outer(0)) {
+      for (int n = 0; n < p_Np; ++n; @inner(0)) {
+        const int id = e * p_Np + n;
+
+        const dfloat rcpTemp = 1 / TEMP[id];
+        UPROP[id + 0 * uOffset] = 1e-2;
+        SPROP[id + 0 * sOffset] = 1e-2;
+        UPROP[id + 1 * uOffset] = p0th * rcpTemp;
+        SPROP[id + 1 * sOffset] = p0th * rcpTemp;
+
+        BETA[id] = rcpTemp;
+        KAPPA[id] = 1 / p0th;
+      }
+    }
+  }
+  #endif
+
+``nrs->o_prop`` stores the fluid viscosity for all GLL points followed by density, while ``cds->o_prop`` stores the diffusivity followed by the product of density and specific heat capacity at constant pressure.
+Corresponding array offsets are, therefore, required by ``fillProp`` to identify the locations where each property is stored.
+``nrs->fieldOffset`` (``uOffset``) is the total number of GLL points in the fluid sub-domain, while the ``cds->fieldOffset[0]`` (``sOffset``) is the total number of GLL points in the temperature sub-domain. 
+
+.. note::
+
+  For a non-CHT case, ``nrs->fieldOffset`` will be equal to ``cds->fieldOffset[0]``.
+
+As mentioned earlier, in the above example ``fillProp`` kernel is specifically written for a calorically perfect ideal gas assumption with constant viscosity and thermal conductivity and with low-Mach equations solved in non-dimensional form. 
+The property specification is as follows,
+
+  * ``UPROP[id + 0 * uOffset]`` :math:`\rightarrow \frac{1}{Re} \rightarrow` non-dimensional viscosity (:math:`Re` is Reynolds number).
+  * ``UPROP[id + 1 * uOffset]`` :math:`\rightarrow \rho^\dagger \rightarrow` non-dimensional density. :math:`\rho^\dagger = p_t^\dagger/T^\dagger` for an ideal gas.
+  * ``SPROP[id + 0 * sOffset]`` :math:`\rightarrow \frac{1}{Pe} \rightarrow` non-dimensional temperature diffusivity (:math:`Pe` is Peclet number)
+  * ``SPROP[id + 1 * sOffset]`` :math:`\rightarrow \rho^\dagger c_p^\dagger \rightarrow` product of non-dimensional density and non-dimensional specific heat (:math:`c_p^\dagger = 1` for a calorically perfect gas).
+  * ``BETA[id]`` :math:`\rightarrow \beta^\dagger \rightarrow` non-dimensional isobaric expansion coefficient. :math:`\beta^\dagger = 1/T^\dagger` for ideal gas.
+  * ``KAPPA[id]`` :math:`\rightarrow \kappa^\dagger \rightarrow` non-dimensional isothermal expansion coefficient. :math:`\kappa^\dagger = 1/p_t^\dagger` for ideal gas.
+
+.. note::
+  For real gases, the user can specify custom non-dimensional properties to the above arrays. 
+  Note that for real gases the non-dimensional expansion coefficients must be multiplied by corresponding non-dimensional factors, i.e.,
+
+  * ``BETA[id]`` :math:`\rightarrow \beta_0 T_0 \beta_T^\dagger` 
+  * ``KAPPA[id]`` :math:`\rightarrow \kappa_0 p_0 \kappa^\dagger` 
+
+.. note::
+  For an open system, the thermodynamic pressure is constant. Thus, :math:`p_t^\dagger=1`. Consequently, ``o_kappa`` array is constant and unity.
+
+``userq`` is the user routine to specify any problem dependent source term appearing in the temperature equation (e.g., volumetric source/sink term).
+See the section on :ref:`scalar source <user_scalar_source>` for details on the procedure for including any non-linear source terms in temperature equation.
+
+For lowMach problems in a closed system and/or in a moving domain, it is necessary to add contribution of time derivative of thermodynamic pressure to the temperature equation.
+A sub-routine is available in the ``lowMach::`` namespace to add this contribution.
+Include it as follows,
+
+.. code-block:: cpp
+
+  void userq(double time)
+  {
+    lowMach::dpdt(nrs->cds->o_NLT);
+  }
+
+``nrs->cds->o_NLT`` is the internal occa array to store the non-linear source term for the scalar (temperature) equation.
+The routine ``lowMach::dpdt`` will add the following contribution to  ``nrs->cds->o_NLT`` array,
+
+ * ``nrs->cds->o_NLT`` :math:`+=` ``alpharef`` :math:`* \frac{dp_t}{dt}`
+
+where ``alpharef`` is the reference non-dimensional coefficient defined earlier in ``UDF_Setup()``.
+
+.. note::
+  For open systems, ``lowMach::dpdt`` call is optional in ``userq``. If called, it will add zero to ``nrs->cds->o_NLT``, since :math:`\frac{dp_t}{dt}=0`.
+
+Further, lowMach system requires thermal divergence for the right hand side of continuity equation (see :ref:`theory <low_mach>` for details).
+The routine to compute thermal divergence must be inlcuded in ``.udf`` as shown below,
+
+.. code-block:: cpp
+
+  void qtl(double time)
+  {
+    lowMach::qThermalSingleComponent(time);
+  }
+
+The above subroutine populates the ``nrs->o_div`` array which stores the local divergence.
+Asuuming constant viscosity and thermal conductivity, the divergence for real gas is,
+
+  * ``nrs->o_div`` :math:`\rightarrow \frac{\beta_0 T_0 \beta_T^\dagger}{\rho^\dagger c_p^\dagger} \left(\nabla \cdot \frac{1}{Pe} \nabla T^\dagger + \frac{p_0}{\rho_0 c_{p0} T_0} \frac{d p_t^\dagger}{dt^\dagger}\right) - \kappa_0 p_0 \kappa^\dagger \frac{d p_t^\dagger}{d t^\dagger}`
+
+while for ideal gas it is,
+
+  * ``nrs->o_div`` :math:`\rightarrow \frac{1}{\rho^\dagger c_p^\dagger T^\dagger} \left(\nabla \cdot \frac{1}{Pe} \nabla T^\dagger + \frac{\gamma_0-1}{\gamma_0} \frac{d p_t^\dagger}{dt^\dagger}\right) - \frac{1}{p_t^\dagger} \frac{d p_t^\dagger}{d t^\dagger}`
+
+.. note::
+  For closed system or moving domain problems, ``lowMach::qThermalSingleComponent`` also computes and updates the time derivative of thermodynamic pressure.
+  It is obtained by combining the continuity and energy equations and subsequent volume integral.
+  Thus, for real gas with constant viscosity and thermal conductivity we get,
+
+  * :math:`\frac{d p_t^\dagger}{d t^\dagger} = \frac {1}{A} \left[-\int_\Gamma \vec{v}^\dagger \cdot \vec{n}_\Gamma d\Gamma + \beta_0 T_0 \int_\Omega \frac{\beta_T^\dagger}{\rho^\dagger c_p^\dagger} \left( \nabla \cdot \frac{1}{Pe} \nabla T^\dagger \right) d\Omega \right]`
+
+  where, :math:`A = \int_\Omega \left(\kappa_0 p_0 \kappa^\dagger - \beta_0 T_0 \frac{\beta_T^\dagger}{\rho^\dagger c_p^\dagger} \frac{p_0}{\rho_0 c_{p0} T_0}\right) d\Omega`
+
+  :math:`\Omega \rightarrow` computational domain; :math:`\Gamma \rightarrow` domain boundary; :math:`\vec{n}_\Gamma \rightarrow` outward pointing normal.
+
+
+.. note::
+  
+  In case of simulations involving multiple species (e.g., reactive flows), ``lowMach::qThermalSingleComponent`` is not valid. 
+  A custom user routine will be required to account for divergence contribution from all species
 
 
 Custom Source Terms
@@ -174,6 +336,8 @@ Explicit Source Terms
 
 Implicit Source Terms
 ^^^^^^^^^^^^^^^^^^^^^
+
+.. _user_scalar_source:
 
 Scalar Equations
 """"""""""""""""

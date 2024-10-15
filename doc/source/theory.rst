@@ -156,21 +156,18 @@ Introducing the non-dimensional variables as follows,
 the low-Mach governing equations are obtained as follows. The continuity equation: 
 
 .. math::
-  :label: lm_real_cont
 
   \nabla \cdot \vec{v}^\dagger = \beta_0 T_0 \beta_t^\dagger \frac{D T^\dagger}{D t^\dagger} - \kappa_0 p_0 \kappa^\dagger \frac{d p_t^\dagger}{dt^\dagger} = Q^\dagger
 
 mometum equation,
 
 .. math::
-  :label: eq:lm_real_momentum
 
   \rho^\dagger \left(\frac{\partial \vec{v}^\dagger}{\partial t^\dagger} + \vec{v}^\dagger \cdot \nabla \vec{v}^\dagger\right) = - \nabla p_1^\dagger + \nabla \cdot \frac{\mu^\dagger}{Re} \left(2 \boldsymbol{\underline{S}}^\dagger - \frac{2}{3} Q^\dagger \boldsymbol{\underline{I}}\right) + \frac{1}{Fr} \rho^\dagger \vec{f}^\dagger
 
 and energy equation,
 
 .. math::
-  :label: eq:lm_real_energy
 
   \rho^\dagger c_p^\dagger \frac{D T^\dagger}{D t^\dagger} = \nabla \cdot \frac{k^\dagger}{Re Pr} \nabla T^\dagger + \frac{p_0}{\rho_0 c_{p0} T_0} \frac{d p_t^\dagger}{d t^\dagger}
 
