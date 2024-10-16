@@ -3,13 +3,10 @@
 Models and Source Terms
 =======================
 
-The :ref:`User-Defined Host Functions (.udf) <udf_functions>` file in NekRS provides the necessary 
-and sufficient interface to load most of the physics models (and postprocessing capabilities).
-For instance, the :ref:`RANS <rans_models>` and :ref:`lowMach compressible <low_mach>` models available in nekRS are
-loaded by including corresponding header files in ``.udf`` and by calling the appropriate functions from the standard 
-functions in ``.udf``. Appropriate boundary conditions for the momentum and scalar transport equations are specified 
-in the :ref:`okl block <okl_block>` (or  in the included ``.oudf`` file). Further, any custom source terms that may need to be added
-to the momentum or scalar equations are also interfaced through the ``.udf`` file. 
+With the exception of :term:`LES` modelling, the :ref:`User-Defined Host Functions (.udf) <udf_functions>` file in NekRS provides the necessary and sufficient interface to load most of the physics models (and postprocessing capabilities).
+For instance, the :ref:`RANS <rans_models>` and :ref:`lowMach compressible <low_mach>` models available in nekRS are loaded by including corresponding header files in ``.udf`` and by calling the appropriate functions from the standard functions in ``.udf``.
+Appropriate boundary conditions for the momentum and scalar transport equations are specified in the :ref:`okl block <okl_block>` (or  in the included ``.oudf`` file).
+Further, any custom source terms that may need to be added to the momentum or scalar equations are also interfaced through the ``.udf`` file. 
 Before proceeding it is, therefore, highly recommended that users familiarize themselves with all components of :ref:`.udf file <udf_functions>`. 
 
 Turbulence models
@@ -131,26 +128,22 @@ RANS models
 .. _ktau_model:
 
 .. Note::
-  RANS model requires two passive scalar fields which must be specified in control parameters ``(.par)``
-  file. For details on how to setup the ``.par`` file, refer to the section on :ref:`.par file <parameter_file>` and also refer :ref:`RANS Channel tutorial <tutorial_rans>` for specific example of ``.par`` file setup for :term:`RANS` simulation
+  RANS model requires two passive scalar fields which must be specified in control parameters ``(.par)`` file.
+  For details on how to setup the ``.par`` file, refer to the section on :ref:`.par file <parameter_file>` and also refer :ref:`RANS Channel tutorial <tutorial_rans>` for specific example of ``.par`` file setup for :term:`RANS` simulation
 
-The essential routines for the :term:`RANS` models in NekRS are available in the namespace in 
-``src/nrs/plugins/RANSktau.hpp``. The default RANS model in nekRS is the :math:`k`-:math:`\tau` model [Tombo2024]_.
+The essential routines for the :term:`RANS` models in NekRS are available in the namespace in ``src/nrs/plugins/RANSktau.hpp``.
+The default RANS model in nekRS is the :math:`k`-:math:`\tau` model [Tombo2024]_.
 Details on the formulation of the :math:`k`-:math:`\tau` can be found :ref:`here <rans_models>`.
 
-To use the :term:`RANS` model in nekRS, first add the necessary include file at the top
-of your ``.udf`` file:
+To use the :term:`RANS` model in nekRS, first add the necessary include file at the top of your ``.udf`` file:
 
 .. code-block:: cpp
 
   #include "RANSktau.hpp"
 
-The header file will make the required :term:`RANS` subroutines accessible in the ``.udf`` file 
-which add the necessary source terms for the :math:`k` and :math:`\tau` transport equations and 
-modify the diffusion operator in the momentum equation.
+The header file will make the required :term:`RANS` subroutines accessible in the ``.udf`` file which add the necessary source terms for the :math:`k` and :math:`\tau` transport equations and modify the diffusion operator in the momentum equation.
 
-Further, in the ``UDF_Setup()`` subroutine, add the following code snippet to initialize the 
-:term:`RANS` model,
+Further, in the ``UDF_Setup()`` subroutine, add the following code snippet to initialize the :term:`RANS` model,
 
 .. code-block:: cpp
   
@@ -164,8 +157,7 @@ Further, in the ``UDF_Setup()`` subroutine, add the following code snippet to in
     RANSktau::setup(ktauFieldStart);
   }
 
-``RANSktau::`` is the namespace declared in the header file ``RANSktau.hpp`` which contains all required
-:term:`RANS` subroutine call definitions.
+``RANSktau::`` is the namespace declared in the header file ``RANSktau.hpp`` which contains all required :term:`RANS` subroutine call definitions.
 
 ``ktauFieldStart`` is the index of the scalar field where the turbulent kinetic energy, ``k``, is stored. In the above example, the :term:`TKE` field corresponds to ``SCALAR01`` as
 specified in ``.par`` file (see :ref:`tutorial <tutorial_rans>` for details).
@@ -176,10 +168,8 @@ specified in ``.par`` file (see :ref:`tutorial <tutorial_rans>` for details).
 .. note::
   nekRS assumes that the :math:`\tau` field array always follows the TKE scalar field. Thus, in the above example nekRS assumes :math:`\tau` field index is 2.
 
-``nrs->userProperties`` and ``nrs->userScalarSource`` are the pointer variables to internal subroutines in nekRS
-which are used to define the user specified transport properties and source terms for the passive scalar equations, respectively.
-As in the above code, these are assigned the pointers to ``uservp`` and ``userq`` routines
-which must be defined in the ``.udf`` file as follows,
+``nrs->userProperties`` and ``nrs->userScalarSource`` are the pointer variables to internal subroutines in nekRS which are used to define the user specified transport properties and source terms for the passive scalar equations, respectively.
+As in the above code, these are assigned the pointers to ``uservp`` and ``userq`` routines which must be defined in the ``.udf`` file as follows,
 
 .. code-block:: cpp
 
@@ -193,27 +183,30 @@ which must be defined in the ``.udf`` file as follows,
     RANSktau::updateSourceTerms();
   }
 
-The ``updateProperties()`` call computes the diffusion coefficients for the momentum and :math:`k`-:math:`\tau`
-equations (see :ref:`RANS theory <rans_models>` for details on RANS model equations),
+The ``updateProperties()`` call computes the diffusion coefficients for the momentum and :math:`k`-:math:`\tau` equations (see :ref:`RANS theory <rans_models>` for details on RANS model equations), which are,
 
 .. math::
-  momentum-equation &\rightarrow \mu + \mu_t \\
-  k-equation &\rightarrow \Gamma_k = \mu + \frac{\mu_t}{\sigma_k} \\ 
-  \tau-equation &\rightarrow \Gamma_\tau = \mu + \frac{\mu_t}{\sigma_\tau}
+  \text{momentum-equation} &\rightarrow \mu + \mu_t \\
+  \text{k-equation} &\rightarrow \Gamma_k = \mu + \frac{\mu_t}{\sigma_k} \\ 
+  \tau\text{-equation} &\rightarrow \Gamma_\tau = \mu + \frac{\mu_t}{\sigma_\tau}
 
 .. note::
-  ``updateProperties()`` also computes the eddy viscosity, :math:`\mu_t`, required in the above diffusion coefficients. If the user desires to extract :math:`\mu_t` array, say for post-processing purpose, it can be accessed as follows in the ``.udf`` file:
+  ``updateProperties()`` also computes the eddy viscosity, :math:`\mu_t`, required in the above diffusion coefficients.
+  If the user desires to extract :math:`\mu_t` array, say for post-processing purpose, it can be accessed as follows in the ``.udf`` file:
  ``auto o_mue_t = RANSktau::o_mue_t();``
 
-while the ``updateSourceTerms()`` call computes all source terms on the right hand side of the :math:`k` and :math:`\tau` transport equations. 
+while the ``updateSourceTerms()`` call computes all source terms on the right hand side of the :math:`k` and :math:`\tau` transport equations, which are, 
 
 .. math::
-  k-equation &\rightarrow P - \rho \beta^* \frac{k}{\tau} \\
-  \tau-equation &\rightarrow -\alpha \rho \tau^2 S^2 + \rho \beta - 8 \Gamma_\tau \left( \nabla \tau^{1/2} \cdot \nabla \tau^{1/2} \right) + C_{D_\tau}
+  k\text{-equation} &\rightarrow P - \rho \beta^* \frac{k}{\tau} \\
+  \tau\text{-equation} &\rightarrow -\alpha \rho \tau^2 S^2 + \rho \beta - 8 \Gamma_\tau \left( \nabla \tau^{1/2} \cdot \nabla \tau^{1/2} \right) + C_{D_\tau}
 
-Note that the ``uservp`` and ``userq`` routines are called at each time step by the solver. The above calls will, therefore, update the diffusion properties and source terms at each time step for all GLL points.
+Note that the ``uservp`` and ``userq`` routines are called at each time step by the solver.
+The above calls will, therefore, update the diffusion properties and source terms at each time step for all GLL points.
 
-The final step in the model setup for the :math:`k`-:math:`\tau` :term:`RANS` model is the specification of the boundary conditions for the :math:`k` and :math:`\tau` transport equations. As explained in the :ref:`RANS theory <rans_models>` section, the wall boundary condition for both :math:`k` and :math:`\tau` equations are zero. These must be explicitly assigned in the :ref:`okl block <okl_block>` section of ``.udf`` file,  
+The final necessary step in the model setup for the :math:`k`-:math:`\tau` :term:`RANS` model is the specification of the boundary conditions for the :math:`k` and :math:`\tau` transport equations.
+As explained in the :ref:`RANS theory <rans_models>` section, the wall boundary condition for both :math:`k` and :math:`\tau` equations are zero.
+These must be explicitly assigned in the :ref:`okl block <okl_block>` section of ``.udf`` file,  
 
 .. code-block:: cpp
 
@@ -225,15 +218,21 @@ The final step in the model setup for the :math:`k`-:math:`\tau` :term:`RANS` mo
   }
 
 .. note::
-  For wall resolved :term:`RANS` simulations, the boundary conditions for both :math:`k` and :math:`\tau` transport equations are of Dirichlet type at the wall and equal to zero.
+  For **wall resolved** :term:`RANS` simulations, the boundary conditions for both :math:`k` and :math:`\tau` transport equations are of Dirichlet type at the wall and equal to zero.
 
 .. warning::
-  It is highly recommended to familiarize with :ref:`okl block <okl_block>` for proper boundary specification. The above example assumes that the computational domain has no inlet boundaries. In case there are inlet boundaries present, they will also have Dirichlet type boundaries for the :math:`k` and :math:`\tau` transport equations and it will be necessary to differentiate the value of :math:`k` and :math:`\tau` at the walls (zero) from those at the inlet (problem dependent). This is done using ``bc->id`` identifier in the :term:`okl block`. 
+  It is highly recommended to familiarize with :ref:`okl block <okl_block>` for proper boundary specification.
+  The above example assumes that the computational domain has no inlet boundaries.
+  In case there are inlet boundaries present, they will also have Dirichlet type boundaries for the :math:`k` and :math:`\tau` transport equations and it will be necessary to differentiate the value of :math:`k` and :math:`\tau` at the walls (zero) from those at the inlet (problem dependent).
+  This is done using ``bc->id`` identifier in the :term:`okl block`. 
   
 Low-Mach Compressible Model
 ---------------------------
 
-The low-Mach compressible model in NekRS is available through the routines defined in ``src/nrs/plugins/lowMach.hpp`` which must be included in the ``.udf`` file. As default, this user guide assumes, and it is strongly recommended, that the low-Mach equations are solved in non-dimensional format. However, appropriate instructions are included herein for dimensional solver. For details on the low-Mach governing equation refer the :ref:`theory section <low_mach>`.
+The low-Mach compressible model in NekRS is available through the routines defined in ``src/nrs/plugins/lowMach.hpp`` which must be included in the ``.udf`` file.
+As default, this user guide assumes, and it is strongly recommended, that the low-Mach equations are solved in non-dimensional format.
+However, appropriate instructions are included herein for dimensional solve.
+For details on the low-Mach governing equation refer the :ref:`theory section <low_mach>`.
 
 Get started with including the header file at the top of your case ``.udf`` file and declaring required global occa arrays,
 
@@ -276,13 +275,13 @@ First, ``alpharef`` is the coefficient of the time derivative of the thermodynam
   For real gases ``alpharef`` :math:`= \frac{p_0}{\rho_0 c_{p0} T_0}`, while for ideal gas assumption ``alpharef`` :math:`= \frac{\gamma_0 - 1}{\gamma_0}`, where :math:`\gamma_0` is the isentropic expansion coefficient (1.4 in the above example).
 
 .. note::
-  :math:`p_0` and :math:`T_0` are the pressure and temperature at reference conditions.
+  :math:`p_0` and :math:`T_0` are the pressure and temperature at reference conditions. :math:`\rho_0`, :math:`c_{p0}` and :math:`\gamma_0` are the density, specific heat capacity and isentropic expansion coefficient at reference conditions. 
 
 .. warning::
 
   For solving the low-Mach equations in dimensional format, ``alpharef`` must be unity.
 
-The remaining arguments to the ``lowMach::setup`` call are the pointers to the ``o_beta`` and ``o_kappa`` arrays. 
+The remaining arguments to the ``lowMach::setup`` call are the pointers to the ``o_beta`` and ``o_kappa`` occa arrays. 
 Memory allocation for the ``o_beta`` and ``o_kappa`` arrays must be done using the ``resize`` functions and their extent must be equal to ``nrs->fieldOffset``, which is the total number of GLL points.
 
 The required transport properties and the expansion coefficients arrays are populated in the ``uservp`` routine,
@@ -366,12 +365,12 @@ The property specification is as follows,
   * ``KAPPA[id]`` :math:`\rightarrow \kappa_0 p_0 \kappa^\dagger` 
 
 .. note::
-  For an open system, the thermodynamic pressure is constant. Thus, :math:`p_t^\dagger=1`. Consequently, ``o_kappa`` array is constant and unity.
+  For an **open system**, the thermodynamic pressure is constant. Thus, :math:`p_t^\dagger=1`. Consequently, ``o_kappa`` array is constant and unity.
 
 ``userq`` is the user routine to specify any problem dependent source term appearing in the temperature equation (e.g., volumetric source/sink term).
 See the section on :ref:`scalar source <user_scalar_source>` for details on the procedure for including any non-linear source terms in temperature equation.
 
-For lowMach problems in a closed system and/or in a moving domain, it is necessary to add contribution of time derivative of thermodynamic pressure to the temperature equation.
+For lowMach problems in a **closed system and/or in a moving domain**, it is necessary to add contribution of time derivative of thermodynamic pressure to the temperature equation.
 A sub-routine is available in the ``lowMach::`` namespace to add this contribution.
 Include it as follows,
 
@@ -393,7 +392,7 @@ where ``alpharef`` is the reference non-dimensional coefficient defined earlier 
   For open systems, ``lowMach::dpdt`` call is optional in ``userq``. If called, it will add zero to ``nrs->cds->o_NLT``, since :math:`\frac{dp_t}{dt}=0`.
 
 Further, lowMach system requires thermal divergence for the right hand side of continuity equation (see :ref:`theory <low_mach>` for details).
-The routine to compute thermal divergence must be inlcuded in ``.udf`` as shown below,
+The routine to compute thermal divergence must be included in ``.udf`` as shown below,
 
 .. code-block:: cpp
 
@@ -403,20 +402,20 @@ The routine to compute thermal divergence must be inlcuded in ``.udf`` as shown 
   }
 
 The above subroutine populates the ``nrs->o_div`` array which stores the local divergence.
-Asuuming constant viscosity and thermal conductivity, the divergence for real gas is,
+Assuming constant viscosity and thermal conductivity, the divergence for real gas is,
 
-  * ``nrs->o_div`` :math:`\rightarrow \frac{\beta_0 T_0 \beta_T^\dagger}{\rho^\dagger c_p^\dagger} \left(\nabla \cdot \frac{1}{Pe} \nabla T^\dagger + \frac{p_0}{\rho_0 c_{p0} T_0} \frac{d p_t^\dagger}{dt^\dagger}\right) - \kappa_0 p_0 \kappa^\dagger \frac{d p_t^\dagger}{d t^\dagger}`
+  * ``nrs->o_div`` :math:`\rightarrow \frac{\beta_0 T_0 \beta_T^\dagger}{\rho^\dagger c_p^\dagger} \left(\nabla \cdot \frac{1}{Pe} \nabla T^\dagger + \dot{q}^\dagger + \frac{p_0}{\rho_0 c_{p0} T_0} \frac{d p_t^\dagger}{dt^\dagger}\right) - \kappa_0 p_0 \kappa^\dagger \frac{d p_t^\dagger}{d t^\dagger}`
 
 while for ideal gas it is,
 
-  * ``nrs->o_div`` :math:`\rightarrow \frac{1}{\rho^\dagger c_p^\dagger T^\dagger} \left(\nabla \cdot \frac{1}{Pe} \nabla T^\dagger + \frac{\gamma_0-1}{\gamma_0} \frac{d p_t^\dagger}{dt^\dagger}\right) - \frac{1}{p_t^\dagger} \frac{d p_t^\dagger}{d t^\dagger}`
+  * ``nrs->o_div`` :math:`\rightarrow \frac{1}{\rho^\dagger c_p^\dagger T^\dagger} \left(\nabla \cdot \frac{1}{Pe} \nabla T^\dagger + \dot{q}^\dagger + \frac{\gamma_0-1}{\gamma_0} \frac{d p_t^\dagger}{dt^\dagger}\right) - \frac{1}{p_t^\dagger} \frac{d p_t^\dagger}{d t^\dagger}`
 
 .. note::
-  For closed system or moving domain problems, ``lowMach::qThermalSingleComponent`` also computes and updates the time derivative of thermodynamic pressure.
+  For **closed system or moving domain problems**, ``lowMach::qThermalSingleComponent`` also computes and updates the time derivative of thermodynamic pressure.
   It is obtained by combining the continuity and energy equations and subsequent volume integral.
   Thus, for real gas with constant viscosity and thermal conductivity we get,
 
-  * :math:`\frac{d p_t^\dagger}{d t^\dagger} = \frac {1}{A} \left[-\int_\Gamma \vec{v}^\dagger \cdot \vec{n}_\Gamma d\Gamma + \beta_0 T_0 \int_\Omega \frac{\beta_T^\dagger}{\rho^\dagger c_p^\dagger} \left( \nabla \cdot \frac{1}{Pe} \nabla T^\dagger \right) d\Omega \right]`
+  * :math:`\frac{d p_t^\dagger}{d t^\dagger} = \frac {1}{A} \left[-\int_\Gamma \vec{v}^\dagger \cdot \vec{n}_\Gamma d\Gamma + \beta_0 T_0 \int_\Omega \frac{\beta_T^\dagger}{\rho^\dagger c_p^\dagger} \left( \nabla \cdot \frac{1}{Pe} \nabla T^\dagger  + \dot{q}^\dagger \right) d\Omega \right]`
 
   where, :math:`A = \int_\Omega \left(\kappa_0 p_0 \kappa^\dagger - \beta_0 T_0 \frac{\beta_T^\dagger}{\rho^\dagger c_p^\dagger} \frac{p_0}{\rho_0 c_{p0} T_0}\right) d\Omega`
 
@@ -433,7 +432,7 @@ Custom Source Terms
 --------------------
 
 NekRS offers the user the option to add custom source terms in ``.udf`` file.
-While the specific construction of the kernels for the user defined source terms will be problem dependent, the following section describes the essential components for building custom source terms.
+While the specific construction of the kernels for the user defined source terms will be problem dependent, the following section describes the essential components for building custom source terms for the momenutm and scalar transport equations.
 
 Momentum Equation
 """""""""""""""""

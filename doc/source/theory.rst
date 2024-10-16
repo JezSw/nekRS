@@ -127,7 +127,7 @@ The low-Mach compressible equations are derived from the fully compressible Navi
 
   \nabla \cdot \vec{v} &= \beta_T \frac{D T}{D t} - \kappa \frac{D p_{t}}{D t} = Q\\
   \rho \left(\frac{\partial \vec{v}}{\partial t} + \vec{v} \cdot \nabla \vec{v} \right) &= -\nabla p_1 + \nabla \cdot \mu \left(2 \boldsymbol{\underline{S}} - \frac{2}{3} Q \boldsymbol{\underline{I}} \right) + \rho \vec{f} \\
-  \rho c_p \frac{D T}{D t} &= \nabla \cdot k \nabla T +  \frac{D p_t}{D t}
+  \rho c_p \frac{D T}{D t} &= \nabla \cdot k \nabla T + \dot{q} + \frac{D p_t}{D t}
   
 Thermodynamic pressure is the leading order, spatially invariant, term in pressure expansion while hydrodynamic pressure is the first order term. :math:`\beta_T` is the isobaric expansion coefficient and :math:`\kappa` is the isothermal expansion coefficient,
 
@@ -151,7 +151,7 @@ Introducing the non-dimensional variables as follows,
 .. math::
 
   \vec{v}^\dagger = \frac{\vec{v}}{U}; \,\, T^\dagger = \frac{T}{T_0}; \,\, \vec{x}^\dagger = \frac{\vec{x}}{L};\,\, p_1^\dagger = \frac{p_1}{\rho U^2};\,\, p_t^\dagger = \frac{p_t}{p_0};\,\, t^\dagger = \frac{t U}{L}; \vec{f}^\dagger = \frac{\vec{f}}{f_0} \\
-  \rho^\dagger = \frac{\rho}{\rho_0}; \,\, c_p^\dagger = \frac{c_p}{c_{p0}}; \,\, k^\dagger =\frac{k}{k_0}; \,\, \mu^\dagger = \frac{\mu}{\mu_0}; \,\, \beta_T^\dagger = \frac{\beta_T}{\beta_0}; \,\, \kappa^\dagger = \frac{\kappa}{\kappa_0} 
+  \rho^\dagger = \frac{\rho}{\rho_0}; \,\, c_p^\dagger = \frac{c_p}{c_{p0}}; \,\, k^\dagger =\frac{k}{k_0}; \,\, \mu^\dagger = \frac{\mu}{\mu_0}; \,\, \beta_T^\dagger = \frac{\beta_T}{\beta_0}; \,\, \kappa^\dagger = \frac{\kappa}{\kappa_0}; \,\, \dot{q}^\dagger = \frac{\dot{q} L}{\rho_0 c_{p0} T_0 U} 
 
 the low-Mach governing equations are obtained as follows. The continuity equation: 
 
@@ -169,11 +169,11 @@ and energy equation,
 
 .. math::
 
-  \rho^\dagger c_p^\dagger \frac{D T^\dagger}{D t^\dagger} = \nabla \cdot \frac{k^\dagger}{Re Pr} \nabla T^\dagger + \frac{p_0}{\rho_0 c_{p0} T_0} \frac{d p_t^\dagger}{d t^\dagger}
+  \rho^\dagger c_p^\dagger \frac{D T^\dagger}{D t^\dagger} = \nabla \cdot \frac{k^\dagger}{Re Pr} \nabla T^\dagger + \dot{q}^\dagger + \frac{p_0}{\rho_0 c_{p0} T_0} \frac{d p_t^\dagger}{d t^\dagger}
 
 where :math:`U` and :math:`L` are the characteristic velocity and length scales. :math:`f_0` is reference magnitude of body force. :math:`p_0` and :math:`T_0` are the reference pressure and temperature, respectively, and :math:`\rho_0, \mu_0, c_{p0}, k_0, \beta_0, \kappa_0` are the corresponding fluid properties (density, dynamic viscosity, specific heat at contant pressure, conductivity, isobaric expansion coefficient and isothermal expansion coefficient, respectively) at reference conditions. 
 
-:math:`Re=\rho_0 U L/\mu_0` is the Reynolds number, :math:`Pr = \mu_0 c_{p0}/k_0` and :math:`Fr=U^2/f_0 L` are the Reynolds number, Prandtl number and Froude number, defined at reference conditions, respectively. The equations are closed by corresponding EOS in non-dimensional form, :math:`\rho^\dagger = f(p_t^\dagger,T^\dagger)`. The above equations represent the lowMach equations in the most general form, applicable to real gases. Depending on the target application and associated assumptions, several simplifications to the equations are possible. In the subsequent section, we discuss the simplifications corresponding to the most common assumption, i.e., ideal gas assumption.
+:math:`Re=\rho_0 U L/\mu_0` is the Reynolds number, :math:`Pr = \mu_0 c_{p0}/k_0` and :math:`Fr=U^2/f_0 L` are the Reynolds number, Prandtl number and Froude number, defined at reference conditions, respectively. The equations are closed by corresponding EOS in non-dimensional form, :math:`\rho^\dagger = f(p_t^\dagger,T^\dagger)`. The above equations represent the lowMach equations in the most general form, applicable to real gases. Depending on the target application and associated assumptions, several simplifications to the equations are possible. In the subsequent section, we discuss the simplifications corresponding to the most commonly employed assumption, i.e., ideal gas assumption.
 
 Low-Mach Equations with Ideal Gas Assumption
 """"""""""""""""""""""""""""""""""""""""""""
@@ -201,11 +201,9 @@ The resulting governing equations for ideal gas assumption, thus, are,
 
 .. math::
 
-  :label: lm_ideal
-
   \nabla \cdot \vec{v}^\dagger &= \frac{1}{T^\dagger} \frac{D T^\dagger}{D t^\dagger} - \frac{1}{p_t^\dagger} \frac{d p_t^\dagger}{dt^\dagger} = Q^\dagger \\
   \rho^\dagger \left(\frac{\partial \vec{v}^\dagger}{\partial t^\dagger} + \vec{v}^\dagger \cdot \nabla \vec{v}^\dagger\right) &= - \nabla p_1^\dagger + \nabla \cdot \frac{\mu^\dagger}{Re} \left(2 \boldsymbol{\underline{S}}^\dagger - \frac{2}{3} Q^\dagger \boldsymbol{\underline{I}}\right) + \frac{1}{Fr} \rho^\dagger \vec{f}^\dagger \\
-  \rho^\dagger c_p^\dagger \frac{D T^\dagger}{D t^\dagger} &= \nabla \cdot \frac{k^\dagger}{Re Pr} \nabla T^\dagger + \frac{\gamma_0-1}{\gamma_0} \frac{d p_t^\dagger}{d t^\dagger}
+  \rho^\dagger c_p^\dagger \frac{D T^\dagger}{D t^\dagger} &= \nabla \cdot \frac{k^\dagger}{Re Pr} \nabla T^\dagger + \dot{q}^\dagger + \frac{\gamma_0-1}{\gamma_0} \frac{d p_t^\dagger}{d t^\dagger}
   
 .. note::
 
