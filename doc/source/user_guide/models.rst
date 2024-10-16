@@ -432,24 +432,156 @@ while for ideal gas it is,
 Custom Source Terms
 --------------------
 
+NekRS offers the user the option to add custom source terms in ``.udf`` file.
+While the specific construction of the kernels for the user defined source terms will be problem dependent, the following section describes the essential components for building custom source terms.
+
 Momentum Equation
 """""""""""""""""
 
-Explicit Source Terms
-^^^^^^^^^^^^^^^^^^^^^
+In order to add source terms to the momentum equation declare a user defined function, (say) ``userf``, in ``.udf`` file and assign its pointer to the internal NekRS pointer used for identifying user defined force function, ``nrs->userVelocitySource``.
+The ``nrs->userVelocitySource`` is initiated as a ``nullptr``.
+The pointer must be assigned in ``UDF_Setup()`` routine as follows,
 
-Implicit Source Terms
-^^^^^^^^^^^^^^^^^^^^^
+.. code-block:: cpp
+  
+  #ifdef __okl__
+    @kernel void gravityForce(const dlong N,
+                              const dlong offset,
+                              @restrict dfloat *FU)
+    {
+      for (dlong n = 0; n < N; ++n; @tile(p_blockSize, @outer, @inner)) {
+        if(n < N) {
+          FU[n + 0 * offset] = 0.0;
+          FU[n + 1 * offset] = -9.81; //acceleration due to gravity
+          FU[n + 2 * offset] = 0.0;
+        }
+      }
+    }
+  #endif
+
+  void userf(double time)
+  {
+    auto mesh = nrs->mesh;
+
+    gravityForce(mesh->Nlocal, nrs->fieldOffset, nrs->o_NLT);
+  }
+
+  void UDF_Setup()
+  {
+    nrs->userVelocitySource = &userf;
+  }
+
+Note that the user defined forcing function, ``userf``, has one input argument i.e., current simulation time.
+The custom force must be populated in the ``nrs->o_NLT`` occa array which is the designated internal occa array object for non-linear momentum source term. 
+The size of ``nrs->o_NLT`` is ``3 * nrs->fieldOffset`` and, thus, it stores the three vector force components for all GLL points in the fluid domain.
+The user defined okl kernel must be called in ``userf`` for populating ``nrs->o_NLT``.
+The above example includes a simple kernel, ``gravityForce``, which assigns gravitational acceleration along *negative y-coordinate* to demonstrate the indexing of ``nrs->o_NLT`` array. 
+For constructing more complicated custom forces, the user is encouraged to familiarize with :ref:`okl block <okl_block>` for further details on writing okl kernels. 
+
+.. note::
+  
+  The ``nrs->o_NLT`` occa array is internally multiplied by density array before being added as a source term to the momentum equation.
+
+
+Implicit Linearized Momentum Source
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In addition to custom explicit force terms, as described above, NekRS also offers the option of adding implicit linearized custom force terms in ``.udf``.
+Implicit treatment of force terms can add more stability to the flow solver.
+To implement linear force term start with assigning the pointer to ``nrs->userVelocityImplicitLinearTerm`` pointer object in ``UDF_Setup()`` routine,
+
+.. code-block:: cpp
+  
+  deviceMemory<dfloat> implicitForcing(double time)
+  {
+    auto mesh = nrs->mesh;
+
+    poolDeviceMemory<dfloat> o_F(mesh->Nlocal);
+    dfloat coeff = 1.0;
+    platform->linAlg->fill(o_F.size(), -coeff, o_F);
+    return o_F;
+  }
+
+  void UDF_Setup()
+  {
+    nrs->userVelocityImplicitLinearTerm = &implicitForcing;
+  }
+
+Note that the function object ``nrs->userVelocityImplicitLinearTerm`` (or ``implicitForcing``) must have the return type ``deviceMemory<dfloat>``, as shown above.
+It take an input argument, simulation ``time``, which may be used to construct a time varying force term.
+The above nominal example demonstrates the following forcing term added implicitly to the flow solver,
+
+.. math::
+  \vec{f} = \rho * coeff * \vec{v}
+
+where ``-coeff`` array, ``o_F``, is returned by the ``implicitForcing`` function.
+``poolDeviceMemory<dfloat> o_F(mesh->Nlocal)`` reserves memory for ``o_F`` from the internally available pool memory of size ``mesh->Nlocal`` (equal to the local number of GLL points).  
+Note that density array is internally multiplied in NekRS.
+
+.. warning::
+
+  The sign of the forcing coefficients must be opposite to the intended force term.  
+
+In the above example, the ``o_F`` array is constant. 
+However, it may be temporally or spatially varying array, depending on the application.
+
+.. note::
+ 
+  ``nrs->userVelocityImplicitLinearTerm`` applies an isotropic coefficient to all components of the custom force. Anisotropic implicit linear force terms are not supported.
 
 .. _user_scalar_source:
 
 Scalar Equations
 """"""""""""""""
 
-Explicit Source Terms
-^^^^^^^^^^^^^^^^^^^^^
+The procedure for implementing custom source term to the scalar equations (including temperature equation) is similar to momentum source term implementation.
+Assign the pointer to the user defined source function, (say) ``userq``, to the internal NekRS pointer in ``UDF_Setup()``,
 
-Implicit Source Terms
-^^^^^^^^^^^^^^^^^^^^^
+.. code-block:: cpp
 
+  void UDF_Setup()
+  {
+    nrs->userScalarSource = &userq;
+  }
 
+The internal NekRS occa memory for storing the custom (non-linear) source term for scalar equations is ``nrs->cds->o_NLT``.
+This must be populated in the user defined ``userq`` routine in ``.udf`` file.
+A simple example is as follows,
+
+.. code-block:: cpp
+
+  #ifdef __okl__
+    scalarSource(const dlong Nelements,
+                 const dlong sOffset,
+                 @restrict const dfloat *X,
+                 @restrict dfloat *FS)
+    {
+      for (dlong e = 0; e < Nelements; ++e; @outer(0)) {
+        for (int n = 0; n < p_Np; ++n; @inner(0)){
+          const int id = e * p_Np + n;
+
+          const dfloat x = X[id];
+          FS[id] = x;
+        }
+      }
+    }
+  #endif
+  void userq(double time)
+  {
+    auto mesh = nrs->mesh;
+    auto cds = nrs->cds;
+
+    auto o_FS0 = cds->o_NLT + cds->fieldOffsetScan[0];
+    //auto o_FS1 = cds->o_NLT + cds->fieldOffsetScan[1];
+    //auto o_FS2 = cds->o_NLT + cds->fieldOffsetScan[2];
+
+    scalarSource(mesh->Nelements,
+                 cds->fieldOffset[0],
+                 mesh->o_x,
+                 o_FS0);
+  }
+
+The source terms for all passive scalar fields are in the contiguous array ``cds->o_NLT``.
+Therefore, to index the location for any particular scalar field the appropriate offset must be specified.
+The ``cds->fieldOffsetScan[is]`` provides the offset for ``is`` scalar field which is used to fetch the pointer to the reuired address in ``cds->o_NLT`` array (assigned to the temporary variable ``o_FS0``).
+An example of a custom okl kernel, ``scalarSource``, is shown above which specifies the source term as a function of the local x-coordinate.
