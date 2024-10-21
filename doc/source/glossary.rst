@@ -93,5 +93,5 @@ Glossary
       A higher-level programming model for :term:`GPU`'s and other accelerators maintained by the Khronos Group
 
     UIUC
-      The University of Illinois at Urbana-Champaign
+      The University of Illinois Urbana-Champaign
 
