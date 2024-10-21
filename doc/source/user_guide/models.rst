@@ -53,7 +53,7 @@ However, if the energy of the input signal is fully resolved on the first six mo
 
 .. _fig:filter:
 
-.. figure:: filter/filter.png
+.. figure:: ../_static/img/filter/filter.png
    :align: center
    :figclass: align-center
    :alt: filter
