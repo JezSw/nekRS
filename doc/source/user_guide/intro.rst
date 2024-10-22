@@ -11,6 +11,104 @@ nekRS.
 Solving in Dimensional vs Non-Dimensional Form
 ----------------------------------------------
 
+It is often advantageous to solve these equations in non-dimensional form
+because non-dimensional formulation can simplify the simulation input parameters
+and provide more numerical stability. Here, we introduce the non-dimensional
+form in as general a manner as possible, assuming the use of variable material
+properties for density, viscosity, specific heat capacity, and thermal
+conductivity that are functions of temperature:
+:math:`\rho=\rho(T)`, :math:`\mu=\mu(T)`, :math:`C_p=C_p(T)`, and :math:`k=k(T)`.
+For simplicity, the functional notation is omitted throughout. Table 
+:ref:`characteristic_quantities` provide some basic parameters for 
+nondimensionalization in nekRS.
+
+.. table:: Physical meanings and NekRS interpretations of characteristic quantities
+  :name:   characteristic_quantities
+
+  ================== ============================ ================================================== 
+  Symbol             Physical meaning             In NekRS           
+  ================== ============================ ================================================== 
+  :math:`D`          Characteristic length        Hydraulic diameter                
+  :math:`U`          Characteristic velocity      Reference velocity                          
+  :math:`\rho_0`     Characteristic density       Reference density
+  :math:`T_0`        Characteristic temperature   Reference temperature                           
+  :math:`\Delta T`   Characteristic velocity      Reference temperature rise relative to :math:`T_0`
+  ================== ============================ ==================================================
+
+Below are the nondimensional parameter in reference to table 
+:ref:`characteristic_quantities`.
+
+.. math::
+
+  x^* = \frac{x}{D}, \quad u^* = \frac{u}{U},
+  \quad t^* = \frac{tU}{D}, \quad P^* = \frac{P}{\rho_0 U^2}, 
+  \quad T^* = \frac{T - T_0}{\Delta T}, \quad  \rho^* = \frac{\rho}{\rho_0}
+
+Here, a subscript of * denotes nondimensionalized parameter, a subscript of 0
+indicates that the property is evaluated at :math:`T_0`. Inserting these
+non-dimensional variables into the mass and momentum conservation equations gives: 
+
+.. math:: \rho^* \left(\frac{\partial u^*}{\partial t^*} + u^* \cdot \nabla u^*\right) = -\nabla P^* + \nabla \cdot \frac{1}{Re} \left(\nabla u^* + (\nabla u^*)^T\right) + f^* \rho^*
+   :label: eq_1
+
+.. math:: \nabla \cdot u^* = -\frac{1}{\rho^*} \left(\frac{\partial \rho^*}{\partial t^*} + u^* \cdot \nabla \rho^*\right)
+   :label: eq_2
+
+Where :math:`Re = \frac{D U \rho_0}{\mu}`, :math:`f^* = \frac{fD}{U^2}`. In 
+equation :eq:`eq_1` and :eq:`eq_2`, :math:`\nabla`` are expanded to explicitly
+show that all derivatives are taken with respect to the nondimensional space
+variable :math:`x^*`.
+
+To non-dimensionalize the energy conservation equation, use the previous 
+non-dimensional variables in addition to a non-dimensional temperature, 
+:math:`T^*=\frac{T-T_0}{\Delta T}`. The heat source is non-dimensionalized as 
+:math:`\dot{q}^*=\frac{\dot{q}}{\rho_0 C_{p0} U\Delta T/D}`, which arises
+naturally from the simple formulation of bulk energy conservation of 
+:math:`Q=\dot{m}C_p\Delta T`, where :math:`Q`` is a heat source (units of Watts)
+and :math:`\dot{m}`` is a mass flowrate. Inserting these non-dimensional 
+variables into the energy conservation equation gives
+
+.. math::
+
+  \rho^* \left(\frac{\partial T^*}{\partial t^*} + \mathbf{u}^* \cdot \nabla T^*\right) = \nabla \cdot (\alpha^* \nabla T^*) + \dot{q}^*
+
+where the nondimensional thermal diffusivity :math:`\alpha^* = 1/Pe`. Pe is the
+Peclet number, :math:`Pe = \frac{DU}{\alpha}` and :math:`\alpha`` is the 
+dimensional thermal diffusivity, :math:`\alpha = \frac{k_0}{\rho_0 C_{p,0}}`.
+
+An example of nondimensionalization for Fully Developed Laminar Flow tutorial
+is given in table :ref:`channel_nondimension`.
+
+.. table:: Channel parameters and their nondimensional values
+  :name:   channel_nondimension
+
+  +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
+  | Parameter name                                  | Variable                 | Value               | Nondimensional value                                             | Note                                                |
+  +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
+  | Channel height                                  | :math:`H`                | 1 cm                | :math:`H^* = H/D = 0.5`                                          | :math:`D = 2`` cm is hydraulic diameter             |
+  +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
+  | Channel length                                  | :math:`L`                | 20 cm               | :math:`L^* = L/D = 10`                                           |                                                     |
+  +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
+  | Mean velocity                                   | :math:`U_m`              | 0.5 m/s             | :math:`U^* = U_m/U = 1`                                          | :math:`U_m = U`` is reference velocity              |
+  +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
+  | Temperature difference between inlet and outlet | :math:`\Delta T`         | :math:`\frac{Q}{\dot{m}c_p} = \frac{q^{\prime\prime} 2L}{H\rho_0 Uc_p} = 20`           |                                                     |
+  +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
+  | Heat flux                                       | :math:`q^{\prime\prime}` | 300 W/m :math:`^2`  | :math:`q^* = \frac{q^{\prime\prime}}{\rho_0 Uc_p \Delta T} = 10` |                                                     |
+  +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
+  | Inlet temperature                               | :math:`T_{in}`           | 10°C                | :math:`T^*_{in} = \frac{T-T_0}{\Delta T} = 0`                    | :math:`T_0 = T_{in}` is the reference temperature   |
+  +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
+  | Density                                         | :math:`\rho`             | 1.2 kg/m :math:`^3` | :math:`\rho^* = \rho/\rho_0 = 1`                                 | :math:`\rho_0` is the reference density             |
+  +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
+  | Viscosity                                       | :math:`\mu``             | 0.00002 kg/m-s      | :math:`\mu^* = 1/Re = 600`                                       |                                                     |
+  +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
+  | Thermal conductivity                            | :math:`\lambda`          | 0.025 W/m-K         | :math:`\lambda^ = 1/Pe = 480`                                    |                                                     |
+  +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
+  | Specific heat capacity                          | :math:`c_p`              | 1000 J/kg-K         | :math:`c_p^* = c_p/c_{p0} = 1`                                   | :math:`c_p = c_{p0}` is the reference heat capacity |
+  +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
+
+Adapting to nekRS
+"""""""""""""""""
+
 nekRS can solve its governing equations in either dimensional or non-dimensional form
 with careful attention to the specification of the material properties. To solve in
 *dimensional* form, the ``density``, ``viscosity``, ``rhoCp``, ``conductivity``, and
