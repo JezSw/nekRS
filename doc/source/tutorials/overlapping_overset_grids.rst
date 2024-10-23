@@ -63,10 +63,11 @@ As before we need to create a UDF file, to get started create a file ``hillnn.ud
 Modify mesh and add forcing to the flow
 ---------------------------------------
 
-As for the mono-domain periodic hill case, we modify the mesh in ``UDF_Setup`` as:
+As for the mono-domain periodic hill case, we modify the mesh defining a function ``UDF_Setup`` and adding:
 
 .. literalinclude:: overlapping_overset_grids/hillnn.udf
    :language: c++
+   :lines: 9-18
 
 .. _fig:hillnn_mesh:
 
@@ -78,4 +79,8 @@ As for the mono-domain periodic hill case, we modify the mesh in ``UDF_Setup`` a
     Modified box mesh graded
 
 Currently, applying a constant mass flux with ``param(54)`` and ``param(55)`` is **not** supported with overlapping overset grids. 
-For this case, we drive the flow using a constant acceleration term in ``scalarNeumannConditions``
+For this case, we drive the flow using a constant acceleration term in ``userf`` and using this within ``UDF_Setup``:
+
+
+.. literalinclude:: overlapping_overset_grids/hillnn.udf
+   :language: c++

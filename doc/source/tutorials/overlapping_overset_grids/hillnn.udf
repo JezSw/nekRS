@@ -1,4 +1,13 @@
 
+void userf(double time) {
+  const dfloat ffx{0.052};
+
+  // Get x component of non-linear momentum array
+  // using offset of 0
+  auto o_FUx = nrs->o_NLT + 0 * nrs->fieldOffset;
+  platform->linAlg->fill(nrs->mesh->Nlocal, ffx, o_FUx);
+}
+
 void UDF_Setup() {
   auto mesh = nrs->meshV;
 
@@ -10,4 +19,14 @@ void UDF_Setup() {
     const dfloat A1{C * (1. + std::tanh(argx))};
     mesh->y[i] = mesh->y[i] + A1 * (3. - mesh->y[i]);
   }
+
+  // initial conditions
+  for(int i{0}; i < mesh -> Nlocal; ++i) {
+    nrs->U[n + 0 * nrs->fieldOffset] = 1.0;
+    nrs->U[n + 1 * nrs->fieldOffset] = 0.0;
+    nrs->U[n + 2 * nrs->fieldOffset] = 0.0;
+  }
+
+  nrs->userVelocitySource = &userf;
 }
+
