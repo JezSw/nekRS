@@ -1,15 +1,3 @@
-#ifdef __okl__
-
-void velocityDirichletConditions(bcData* bc) {
-  bc->u = 1.0;
-  bc->v = 0.0;
-  bc->w = 0.0;
-  bc->s = 0.0;
-}
-
-#endif
-
-
 void UDF_Setup() {
   auto mesh = nrs->meshV;
 
@@ -20,6 +8,13 @@ void UDF_Setup() {
     const dfloat argx{B * (std::abs(mesh->x[i] - A) - B)};
     const dfloat A1{C * (1. + std::tanh(argx))};
     mesh->y[i] = mesh->y[i] + A1 * (3. - mesh->y[i]);
+  }
+
+  // set initial conditions
+  for(int i{0}; i < mesh -> Nlocal; ++i) {
+    nrs->U[n + 0 * nrs->fieldOffset] = 1.0;
+    nrs->U[n + 1 * nrs->fieldOffset] = 0.0;
+    nrs->U[n + 2 * nrs->fieldOffset] = 0.0;
   }
 }
 

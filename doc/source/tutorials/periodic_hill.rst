@@ -85,11 +85,11 @@ Initial & boundary conditions
 -----------------------------
 
 The next step is to specify the initial conditions.
-This can be done by defining the function ``velocityDirichletConditions`` within the *OCCA* directives as follows:
+This can be done by adding the following to ``UDF_Setup``:
 
 .. literalinclude:: ./periodic_hill/hillp.udf
    :language: c++
-   :lines: 1-9
+   :lines: 13-18
 
 For walls and periodic boundaries, nothing needs to be specified in the user file, so ``scalarDirichletConditions``
 and ``scalarNeumannConditions`` do not need to be defined.
