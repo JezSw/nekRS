@@ -1,3 +1,6 @@
+#ifdef __okl__
+#endif
+
 void UDF_Setup() {
   auto mesh = nrs->meshV;
 
@@ -11,7 +14,7 @@ void UDF_Setup() {
   }
 
   // set initial conditions
-  for(int i{0}; i < mesh -> Nlocal; ++i) {
+  for(int n{0}; n < mesh -> Nlocal; ++n) {
     nrs->U[n + 0 * nrs->fieldOffset] = 1.0;
     nrs->U[n + 1 * nrs->fieldOffset] = 0.0;
     nrs->U[n + 2 * nrs->fieldOffset] = 0.0;
