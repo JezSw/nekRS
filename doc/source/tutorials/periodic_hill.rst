@@ -65,8 +65,8 @@ In NekRS we can specify this through ``UDF_Setup`` in the ``.udf`` file:
 
 .. literalinclude:: ./periodic_hill/hillp.udf
    :language: c++
-   :lines: 12-23
-   :emphasize-lines: 10
+   :lines: 10-14
+   :emphasize-lines: 4
 
 By modifying the mesh in ``UDF_Setup``, the modification is applied to the GLL points directly. 
 This allows the mesh to conform to the specified profile to :math:`N^{th}`-order accuracy.
@@ -89,7 +89,7 @@ This can be done by adding the following to ``UDF_Setup``:
 
 .. literalinclude:: ./periodic_hill/hillp.udf
    :language: c++
-   :lines: 13-18
+   :lines: 17-21
 
 For walls and periodic boundaries, nothing needs to be specified in the user file, so ``scalarDirichletConditions``
 and ``scalarNeumannConditions`` do not need to be defined.
