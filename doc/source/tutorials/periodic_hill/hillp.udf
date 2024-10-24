@@ -1,0 +1,24 @@
+#ifdef __okl__
+#endif
+
+void UDF_Setup() {
+  auto mesh = nrs->meshV;
+
+  const dfloat A{4.5}, B{3.5}, C{1./6};
+
+  // mesh modification
+  for(int i{0}; i < mesh -> Nlocal; ++i) {
+    const dfloat argx{B * (std::abs(mesh->x[i] - A) - B)};
+    const dfloat A1{C * (1. + std::tanh(argx))};
+    mesh->y[i] = mesh->y[i] + A1 * (3. - mesh->y[i]);
+  }
+
+  // set initial conditions
+  for(int n{0}; n < mesh -> Nlocal; ++n) {
+    nrs->U[n + 0 * nrs->fieldOffset] = 1.0;
+    nrs->U[n + 1 * nrs->fieldOffset] = 0.0;
+    nrs->U[n + 2 * nrs->fieldOffset] = 0.0;
+  }
+}
+
+void UDF_ExecuteStep(double time, int tstep) {}
