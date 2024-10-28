@@ -48,6 +48,16 @@ Here, a subscript of * denotes nondimensionalized parameter, a subscript of 0
 indicates that the property is evaluated at :math:`T_0`. Inserting these
 non-dimensional variables into the mass and momentum conservation equations gives: 
 
+.. math:: 
+  
+  \rho^* \rho_0 \left(\frac{\partial(u^* U)}{\partial(t^* (D/U))}+\frac{u^* U}{D}\cdot\nabla u^* U\right)=-\frac{1}{D} \nabla(P^* (\rho_0 U^2))+\frac{1}{D} \nabla\cdot\mu\left{\frac{1}{D} (\nabla(u^* U)+\nabla(u^* U)^T )\right}+\rho f
+
+.. math:: 
+  
+  \frac{1}{D} \nabla\cdot(u^* U)=-\frac{1}{\rho^* \rho_o } \left(\frac{\partial(\rho^* \rho_o)}{\partial(t^* (D/U))}+\frac{1}{D} u^* U\cdot\nabla(\rho^* \rho_o)\right)
+
+Which is equivalent to
+
 .. math:: \rho^* \left(\frac{\partial u^*}{\partial t^*} + u^* \cdot \nabla u^*\right) = -\nabla P^* + \nabla \cdot \frac{1}{Re} \left(\nabla u^* + (\nabla u^*)^T\right) + f^* \rho^*
    :label: eq_1
 
@@ -70,14 +80,20 @@ variables into the energy conservation equation gives
 
 .. math::
 
+  \rho^* \rho_0 \left(\frac{\partial(T^* \Delta T)}{\partial(t^* (D/U))}+\frac{u^* U}{D}\cdot\nabla(T^* \Delta T)\right)=\frac{1}{D^2} \nabla\cdot\frac{k}{c_p} \nabla(T^* \Delta T)
+
+Which is equivalent to
+
+.. math::
+
   \rho^* \left(\frac{\partial T^*}{\partial t^*} + \mathbf{u}^* \cdot \nabla T^*\right) = \nabla \cdot (\alpha^* \nabla T^*) + \dot{q}^*
 
 where the nondimensional thermal diffusivity :math:`\alpha^* = 1/Pe`. Pe is the
 Peclet number, :math:`Pe = \frac{DU}{\alpha}` and :math:`\alpha`` is the 
 dimensional thermal diffusivity, :math:`\alpha = \frac{k_0}{\rho_0 C_{p,0}}`.
 
-An example of nondimensionalization for Fully Developed Laminar Flow tutorial
-is given in table :ref:`channel_nondimension`.
+An example of nondimensionalization for the :ref:`fdlf` tutorial is given in
+table :ref:`channel_nondimension`.
 
 .. table:: Channel parameters and their nondimensional values
   :name:   channel_nondimension
@@ -99,7 +115,7 @@ is given in table :ref:`channel_nondimension`.
   +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
   | Density                                         | :math:`\rho`             | 1.2 kg/m :math:`^3` | :math:`\rho^* = \rho/\rho_0 = 1`                                 | :math:`\rho_0` is the reference density             |
   +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
-  | Viscosity                                       | :math:`\mu``             | 0.00002 kg/m-s      | :math:`\mu^* = 1/Re = 600`                                       |                                                     |
+  | Viscosity                                       | :math:`\mu`              | 0.00002 kg/m-s      | :math:`\mu^* = 1/Re = 600`                                       |                                                     |
   +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
   | Thermal conductivity                            | :math:`\lambda`          | 0.025 W/m-K         | :math:`\lambda^ = 1/Pe = 480`                                    |                                                     |
   +-------------------------------------------------+--------------------------+---------------------+------------------------------------------------------------------+-----------------------------------------------------+
