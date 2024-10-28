@@ -8,6 +8,20 @@ void userf(double time) {
   platform->linAlg->fill(nrs->mesh->Nlocal, ffx, o_FUx);
 }
 
+void velocityDirichletConditions(bcData *bc) {
+  if(bc->id == 3) {
+    bc->u = bc->uinter;
+    bc->v = bc->vinter;
+    bc->w = bc->winter;
+    bc->s = bc->sinter;
+  } else {
+    bc->u = 0.0;
+    bc->v = 0.0;
+    bc->w = 0.0;
+    bc->s = 0.0;
+  }
+}
+
 void UDF_Setup() {
   auto mesh = nrs->meshV;
 
@@ -30,3 +44,4 @@ void UDF_Setup() {
   nrs->userVelocitySource = &userf;
 }
 
+void UDF_ExecuteStep(double time, int tstep) {}
