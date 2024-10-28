@@ -1,0 +1,22 @@
+[GENERAL]
+polynomialOrder = 7
+stopAt = endTime
+endTime  = 200
+variableDT = yes
+dt = targetCFL = 0.4 + initial=1e-1
+timeStepper = bdf2
+checkpointControl = runTime
+checkpointInterval = 20
+udf = "hillnn.udf"
+
+[PROBLEMTYPE]
+equation = navierstokes
+
+[VELOCITY]
+residualTol = 1e-8
+density = 1
+viscosity = -100
+
+[MESH]
+solver = user
+file = "lower.re2"
