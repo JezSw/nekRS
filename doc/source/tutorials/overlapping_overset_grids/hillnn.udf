@@ -1,6 +1,8 @@
+static int P_INTERPOLATED_BC_ID;
+
 #ifdef __okl__
 void codedFixedValueVelocity(bcData *bc) {
-  if(bc->id == 3) {
+  if(bc->id == p_interpolated_bc_id) {
     bc->u = bc->uinterp;
     bc->v = bc->vinterp;
     bc->w = bc->winterp;
@@ -11,6 +13,17 @@ void codedFixedValueVelocity(bcData *bc) {
   }
 }
 #endif
+
+void UDF_LoadKernels(deviceKernelProperties& kernelInfo)
+{
+   setupAide& options = platform->options;
+   kernelInfo.define("p_interpolated_bc_id") = P_INTERPOLATED_BC_ID;
+}
+
+void UDF_Setup0(MPI_Comm comm, setupAide &options)
+{
+  platform->par->extract("casedata", "interpolated_bc_id", P_INTERPOLATED_BC_ID);
+}
 
 void userf(double time) {
   const dfloat ffx{0.052};

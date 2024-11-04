@@ -1,7 +1,7 @@
 [GENERAL]
 polynomialOrder = 7
 stopAt = endTime
-endTime  = 200
+endTime  = 1
 variableDT = yes
 dt = targetCFL = 0.4 + initial=1e-1
 timeStepper = bdf2
@@ -19,3 +19,6 @@ viscosity = -100
 
 [MESH]
 file = "lower.re2"
+
+[CASEDATA]
+interpolated_bc_id = 3
