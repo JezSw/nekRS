@@ -18,6 +18,10 @@ Turbulence models
 Large Eddy Simulation (LES)
 """""""""""""""""""""""""""
 
+.. note::
+
+  Pertinent example cases: `Tubulent pipe flow <https://github.com/Nek5000/nekRS/tree/next/examples/turbPipe>`_; `Turbulent channel flow <https://github.com/Nek5000/nekRS/tree/next/examples/turbChannel>`_
+
 In NekRS, the sub-grid scale dissipation for :term:`LES` simulations is applied by means of a stabilizing filter, which
 drains energy from the solution at the lowest resolved wavelengths, effectively acting as a sub-grid scale model. A
 filter is necessary to run an LES turbulence model in NekRS and spectral methods in general, as they lack the numerical
@@ -143,6 +147,9 @@ RANS models
 
 .. _ktau_model:
 
+.. note::
+  Pertinent example case: `Turbulent RANS Channel <https://github.com/Nek5000/nekRS/tree/next/examples/ktauChannel>`_
+
 .. Note::
   RANS model requires two passive scalar fields which must be specified in control parameters ``(.par)`` file.
   For details on how to setup the ``.par`` file, refer to the section on :ref:`.par file <parameter_file>` and also
@@ -257,6 +264,10 @@ zero. These must be explicitly assigned in the :ref:`okl block <okl_block>` sect
   
 Low-Mach Compressible Model
 ---------------------------
+
+.. note::
+
+  Pertinent example cases: `Moving cylinder <https://github.com/Nek5000/nekRS/tree/next/examples/mv_cyl>`_; `Low Mach test <https://github.com/Nek5000/nekRS/tree/next/examples/lowMach>`_
 
 The low-Mach compressible model in NekRS is available through the routines defined in ``src/nrs/plugins/lowMach.hpp``
 which must be included in the ``.udf`` file. As default, this user guide assumes, and it is strongly recommended, that
@@ -484,6 +495,10 @@ transport equations.
 Momentum Equation
 """""""""""""""""
 
+.. note::
+
+  Pertinent example case: `gabls <https://github.com/Nek5000/nekRS/blob/next/examples/gabls1/gabls.udf>`_
+
 In order to add source terms to the momentum equation declare a user defined function, (say) ``userf``, in ``.udf``
 file and assign its pointer to the internal NekRS pointer used for identifying user defined force function,
 ``nrs->userVelocitySource``. The ``nrs->userVelocitySource`` is initiated as a ``nullptr``. The pointer must be assigned
@@ -534,6 +549,10 @@ on writing okl kernels.
 
 Implicit Linearized Momentum Source
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note::
+
+  Pertinent example case: `Homogeneous isotropic turbulence <https://github.com/Nek5000/nekRS/tree/next/examples/hit>`_
 
 In addition to custom explicit force terms, as described above, NekRS also offers the option of adding implicit
 linearized custom force terms in ``.udf``. Implicit treatment of force terms can add more stability to the flow solver.
@@ -586,6 +605,10 @@ However, it may be temporally or spatially varying array, depending on the appli
 
 Scalar Equations
 """"""""""""""""
+
+.. note::
+
+  Pertinent example cases: `RANS Channel <https://github.com/Nek5000/nekRS/tree/next/examples/ktauChannel>`_; `Low Mach test <https://github.com/Nek5000/nekRS/tree/next/examples/lowMach>`_; `Turbulent pipe <https://github.com/Nek5000/nekRS/tree/next/examples/turbPipe>`_
 
 The procedure for implementing custom source term to the scalar equations (including temperature equation) is similar to
 momentum source term implementation. Assign the pointer to the user defined source function, (say) ``userq``, to the
