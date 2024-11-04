@@ -3,7 +3,7 @@
 Postprocessing
 ==============
 
-Once a case has been setup correctly so it can be run without errors, you may want 
+Once a case has been setup correctly so it can be run without errors, you may want
 to modify the postprocessing to of the simulation output. By default, NekRS will
 output a basic set of data according to frequency set in the ``checkpointInterval`` of
 the :ref:`parameter_file` which can subsequently be viewed through a visualization
@@ -37,24 +37,24 @@ and decide whether dumping a specific field into checkpoint files. Combined
 with ``solver = none``, the extra fields can be stored into auxiliary scalar fields.
 This is equivalent to simply attach the pointer to a field name.
 
-FIXME: size of scalars? std::vector? occupied scalar01? 
+FIXME: size of scalars? std::vector? occupied scalar01?
 For instance, the following line will add the density to the slot of ``scalar01``.
 
 .. code-block:: cpp
-    
+
     nrs->addUserCheckpointField("scalar01", std::vector<deviceMemory<dfloat>>{nrs->o_rho});
 
 Adding Custom Output File
 """""""""""""""""""""""""
 
-A more flexible approach is to dump all desired fields into a separate file. 
+A more flexible approach is to dump all desired fields into a separate file.
 
 FIXME: mesh?, particles (adios2)? name for nek engine?
 
 ``iofldFactory`` APIs:
 
 
-The variable name must match with default field names. 
+The variable name must match with default field names.
 Otherwise, ?? restart fail?, iofldNek fails?
 
 .. code-block:: cpp
@@ -81,7 +81,7 @@ Otherwise, ?? restart fail?, iofldNek fails?
 
 
 
-- ``polynomialOrder``: Can be a different polynomial order. 
+- ``polynomialOrder``: Can be a different polynomial order.
 - ``uniform``: Interpolation data from GLL points to uniform grid.
 - Element filter: Only dump the elements in the list. For example, the below
   code snippet coped from ``turbPipe`` filters out the elements which has
@@ -90,8 +90,8 @@ Otherwise, ?? restart fail?, iofldNek fails?
   .. code-block:: cpp
     :emphasize-lines: 11
 
-    auto elementFilter = [&]() 
-    { 
+    auto elementFilter = [&]()
+    {
       std::vector<int> elementFilter;
       for(int e = 0; e < mesh->Nelements; e++) {
          auto zmaxLocal = std::numeric_limits<dfloat>::lowest();
@@ -115,13 +115,13 @@ nek5000 reader
 Compute Derived Quantity
 ------------------------
 
-Additional control of the simulation to compute additional/derived quantities 
-or output custom fields can be achieved by utilising the ``UDF_ExecuteStep`` 
-function of the ``.udf`` file. Here we demonstrate how this can be used to 
+Additional control of the simulation to compute additional/derived quantities
+or output custom fields can be achieved by utilising the ``UDF_ExecuteStep``
+function of the ``.udf`` file. Here we demonstrate how this can be used to
 compute a derived quantity and output custom fields.
 
 Qcriterion in turbPipe example
-opSEM, nusselt, 
+opSEM, nusselt,
 
 ``checkpointStep``
 
@@ -144,7 +144,7 @@ Runtime Averaging
 """""""""""""""""
 
 tavg plugin
-
+atime
 Planar Averaging
 
 nusselt of space
@@ -155,7 +155,9 @@ Sample Points & Particle Tracking
 """""""""""""""""""""""""""""""""
 
 plot over lines
+
 particle tracking
+
 hpts()
 
 Legacy Support (userchk)
@@ -165,37 +167,133 @@ Legacy Support (userchk)
 Guideline for Custom Output
 ---------------------------
 
-stdout, 
+stdout
 grep -v >>>
 flush cache to logfile
 MPIIO command
-Particles 
+Particles
 
 FIXME: remove this? leave a simple example under particles
 
 
 
 
-Adios2 Format
+ADIOS2 Format
 -------------
 
-``checkpointEngine = adios``
+Starting from v24, the iofld class is introduced to handle reading and writing
+files. This includes the `ADIOS2 <https://adios2.readthedocs.io>`__ support and
+its `BPFile format version 5 (BP5) <https://adios2.readthedocs.io/en/v2.10.2/engines/engines.html#bp5>`__,
+controlled by ``checkpointEngine = adios``.
 
-reading from uniform?
-particles?
+By default, NekRS compiles the adios2 as a 3rd party library ``ENABLE_ADIOS=on``.
+
+The checkpoint file will be a folder end with ``.bp`` postfix, such as ``turbPipe.bp/``.
+The `ADIOS2 command line utilities <https://adios2.readthedocs.io/en/v2.10.2/ecosystem/utilities.html#command-line-utilities>`__ will also be installed under ``$NEKRS_HOME/bin/``.
+Those provides easy ways to inspect and manipulate the data. The data structure
+will be converted to vtk like format and can be opened by the ParaView's ``ADIOS2VTXReader``.
+
+Here are some sample usages to inspect the file:
+
+- Check metadata with ``$NEKRS_HOME/bin/bpls turbPipe.bp/``. In this case, there are
+  5 timesteps.
+
+  .. code-block:: bash
+
+      uint64_t  connectivity      [2]*{1344560, 9}
+      uint64_t  globalElementIds  [2]*{3920}
+      uint32_t  numOfCells        scalar
+      uint32_t  numOfPoints       scalar
+      uint32_t  polynomialOrder   scalar
+      float     pressure          5*[2]*{2007040}
+      double    time              5*scalar
+      uint32_t  types             scalar
+      float     velocity          5*[2]*{2007040, 3}
+      float     vertices          [2]*{2007040, 3}
+
+- Dump specific variables with ``-d``. For example,
+  ``$NEKRS_HOME/bin/bpls turbPipe.bp/ time polynomialOrder numOfCells numOfPoints -d``
+
+  .. code-block:: bash
+
+      uint32_t  numOfCells        scalar
+    1344560
+
+      uint32_t  numOfPoints       scalar
+    2007040
+
+      uint32_t  polynomialOrder   scalar
+    7
+
+      double    time              5*scalar
+        (0)    0.003 0.006 0.0135 0.0255 0.0375
+
+By default, vtkCellType ``types=12`` is used, which converts each element to
+``343=N*N*N`` cells. In this example, 3920 elements and 7-th degree polynomials
+means a total number of $1344560$ cells, which is defined as the points id stored
+in ``connectivity`` whos coordinates are stored in ``vertices``.
+All scalar fields and vectors fields are then represented on those ``numOfPoints=2007040``
+points.
 
 ParaView Reader
 VisIt (issue)
-bpls commands, links to adios2 doc
 
-On HPC, one might want to use 
+On HPC, one might want to use
 ``export ADIOS2_INSTALL_DIR=<path-to-adios2>``
 ENABLE_ADIOS FIXME: move to installation
 
-$NEKRS_HOME/bin/bpls turbPipe.bp
-bpls -h
-bpls -l 
-bpls time -d
+ADIOS2 format is more flexicle in the sense that it allows user to name the
+variables freely as an additional field. Here is an example of dumping a file contains
+``velocity`` vector and a scalar field of ``q_criterion``.
+
+TODO: add link to file
+
+- Global variables
+
+  .. code-block:: cpp
+
+      std::unique_ptr<iofld> iofld;
+      deviceMemory<dfloat> o_qcriterion;
+
+- ``UDF_Setup``
+
+  .. code-block:: cpp
+
+      // UDF_Setup
+      o_qcriterion.resize(mesh->Nlocal); // q croterion
+
+      iofld = iofldFactory::create("adios");
+      iofld->open(mesh, iofld::mode::write, "test");
+      iofld->writeAttribute("uniform", "true");
+      iofld->writeAttribute("polynomialOrder", std::to_string(15));
+
+      { // velocity
+        std::vector<occa::memory> o_iofldU;
+        o_iofldU.push_back(nrs->o_U.slice(0 * nrs->fieldOffset, nrs->mesh->Nlocal));
+        o_iofldU.push_back(nrs->o_U.slice(1 * nrs->fieldOffset, nrs->mesh->Nlocal));
+        o_iofldU.push_back(nrs->o_U.slice(2 * nrs->fieldOffset, nrs->mesh->Nlocal));
+        iofld->addVariable("velocity", o_iofldU);
+      }
+
+      { // scalars
+        iofld->addVariable("q_criterion", std::vector<deviceMemory<dfloat>>{o_qcriterion});
+      }
+
+- ``UDF_ExecuteStep``
+
+  .. code-block:: cpp
+
+      // UDF_ExecuteStep
+      if (nrs->checkpointStep) {
+        nrs->Qcriterion(nrs->o_U, o_qcriterion);
+        iofld->addVariable("time", time);
+        iofld->addVariable("timeStep", tstep);
+        iofld->process();
+      }
+
+      if (nrs->lastStep) iofld->close();
+
+
 
 In-Situ Visualization
 ---------------------
