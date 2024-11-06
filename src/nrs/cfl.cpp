@@ -8,7 +8,7 @@ static occa::memory o_dx;
 
 void setup(nrs_t *nrs)
 {
-  mesh_t *mesh = nrs->meshV;
+  auto mesh = nrs->mesh;
   h_scratch = platform->device.mallocHost<dfloat>(mesh->Nelements);
 
   if (nrs->elementType == QUADRILATERALS || nrs->elementType == HEXAHEDRA) {
@@ -32,7 +32,7 @@ void setup(nrs_t *nrs)
   firstTime = false;
 }
 
-}
+} // namespace
 
 dfloat nrs_t::computeCFL()
 {
@@ -41,22 +41,15 @@ dfloat nrs_t::computeCFL()
 
 dfloat nrs_t::computeCFL(dfloat dt)
 {
-  mesh_t *mesh = this->meshV;
+  if (firstTime) {
+    setup(this);
+  }
 
-  if (firstTime) setup(this);
+  auto o_cfl = platform->deviceMemoryPool.reserve<dfloat>(mesh->Nelements);
 
-  auto o_cfl = platform->o_memPool.reserve<dfloat>(mesh->Nelements);
+  this->cflKernel(mesh->Nelements, dt, mesh->o_vgeo, o_dx, this->fieldOffset, this->o_U, mesh->o_U, o_cfl);
 
-  this->cflKernel(mesh->Nelements,
-                  dt,
-                  mesh->o_vgeo,
-                  o_dx,
-                  this->fieldOffset,
-                  this->o_U,
-                  mesh->o_U,
-                  o_cfl);
-
-  auto scratch = (dfloat *) h_scratch.ptr();
+  auto scratch = (dfloat *)h_scratch.ptr();
   o_cfl.copyTo(scratch);
 
   dfloat cfl = 0;

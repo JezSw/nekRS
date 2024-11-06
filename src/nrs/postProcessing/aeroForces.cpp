@@ -8,8 +8,6 @@ static std::vector<dfloat> tmp;
 
 AeroForce *nrs_t::aeroForces(int nbID, const occa::memory &o_bID, const occa::memory &o_Sij_)
 {
-  mesh_t *mesh = this->meshV;
-
   occa::memory o_Sij = o_Sij_;
   if (!o_Sij.isInitialized()) {
     o_Sij = this->strainRate();
@@ -22,7 +20,7 @@ AeroForce *nrs_t::aeroForces(int nbID, const occa::memory &o_bID, const occa::me
     o_rho = this->o_rho;
   }
 
-  auto o_forces = platform->o_memPool.reserve<dfloat>(2 * mesh->dim * mesh->Nelements);
+  auto o_forces = platform->deviceMemoryPool.reserve<dfloat>(2 * mesh->dim * mesh->Nelements);
   static occa::kernel kernel;
   if (!kernel.isInitialized()) {
     kernel = platform->kernelRequests.load("nrs-aeroForces");

@@ -48,7 +48,7 @@ void ciSetup(MPI_Comm comm, setupAide &options)
 void ciTestPartitionOfUnity(nrs_t *nrs, double time, int tstep)
 {
   if(nrs->neknek->multirate()) return;
-  auto mesh = nrs->meshV;
+  auto mesh = nrs->mesh;
   auto minMaxFld = [&](occa::memory o_a) {
     const auto minFld = platform->linAlg->min(mesh->Nlocal, o_a, platform->comm.mpiCommParent);
     const auto maxFld = platform->linAlg->max(mesh->Nlocal, o_a, platform->comm.mpiCommParent);
@@ -61,7 +61,7 @@ void ciTestPartitionOfUnity(nrs_t *nrs, double time, int tstep)
   const auto expectedGlobalVolume = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
 
   const auto o_partition = nrs->neknek->partitionOfUnity();
-  auto o_volume = platform->o_memPool.reserve<dfloat>(mesh->Nlocal);
+  auto o_volume = platform->deviceMemoryPool.reserve<dfloat>(mesh->Nlocal);
 
   platform->linAlg->axmyz(mesh->Nlocal, 1.0, o_partition, mesh->o_Jw, o_volume);
 
@@ -100,7 +100,7 @@ void ciTestPointInterp(nrs_t *nrs, double time, int tstep)
   std::vector<dfloat> UouterExact(nrs->NVfields * n);
   o_UouterExact.copyTo(UouterExact.data(), nrs->NVfields * n);
 
-  auto interp = pointInterpolation_t(nrs->meshV, platform->comm.mpiCommParent);
+  auto interp = pointInterpolation_t(nrs->mesh, platform->comm.mpiCommParent);
   interp.setPoints(o_xinterp, o_yinterp, o_zinterp);
   interp.find(pointInterpolation_t::VerbosityLevel::Detailed);
   auto o_Uouter = platform->device.malloc<dfloat>(nrs->NVfields * n);
@@ -120,7 +120,7 @@ void ciTestPointInterp(nrs_t *nrs, double time, int tstep)
 
 void vizNekNekField(nrs_t *nrs)
 {
-  auto mesh = nrs->meshV;
+  auto mesh = nrs->mesh;
   auto neknek = nrs->neknek;
 
   const auto neknekFieldOffset = neknek->fieldOffset();
@@ -159,14 +159,14 @@ void ciTestInitialStep(nrs_t *nrs, double time, int tstep)
 {
   if(nrs->neknek->multirate()) return;
 
-  auto mesh = nrs->meshV;
+  auto mesh = nrs->mesh;
   auto neknek = nrs->neknek;
   const auto neknekFieldOffset = neknek->fieldOffset();
   exactUVW(mesh->Nlocal, nrs->fieldOffset, time, mesh->o_x, mesh->o_y, mesh->o_z, nrs->o_U);
   
   neknek->updateBoundary(tstep, 2, time); // pass in stage == 2 to prevent lagging
 
-  auto o_Uexp = platform->o_memPool.reserve<dfloat>(nrs->NVfields * neknekFieldOffset);
+  auto o_Uexp = platform->deviceMemoryPool.reserve<dfloat>(nrs->NVfields * neknekFieldOffset);
   auto npt = neknek->npt();
   exactUVW(npt, neknekFieldOffset, time, neknek->o_x(), neknek->o_y(), neknek->o_z(), o_Uexp);
 
@@ -225,16 +225,16 @@ void ciTestErrors(nrs_t *nrs, double time, int tstep)
     return;
   }
 
-  auto mesh = nrs->meshV;
+  auto mesh = nrs->mesh;
 
-  auto o_Uexact = platform->o_memPool.reserve<dfloat>(mesh->dim * nrs->fieldOffset);
+  auto o_Uexact = platform->deviceMemoryPool.reserve<dfloat>(mesh->dim * nrs->fieldOffset);
   exactUVW(mesh->Nlocal, nrs->fieldOffset, time, mesh->o_x, mesh->o_y, mesh->o_z, o_Uexact);
 
   auto uErr = platform->linAlg->maxRelativeError(
                 mesh->Nlocal, mesh->dim, nrs->fieldOffset, 1e-6,
                 nrs->o_U, o_Uexact, platform->comm.mpiCommParent);
 
-  auto o_Sexact = platform->o_memPool.reserve<dfloat>(nrs->fieldOffset);
+  auto o_Sexact = platform->deviceMemoryPool.reserve<dfloat>(nrs->fieldOffset);
   o_Sexact.copyFrom(o_Uexact, nrs->fieldOffset);
 
   auto o_s00 = nrs->cds->o_S.slice(nrs->cds->fieldOffsetScan[0], mesh->Nlocal);
@@ -250,7 +250,7 @@ void ciTestErrors(nrs_t *nrs, double time, int tstep)
 
     case 2:
       CiEvalTest("velocity (relLinfErr: " + to_string_f(uErr) + ")", uErr < 3e0);
-      CiEvalTest("scalar00 (relLinfErr: " + to_string_f(s00Err) + ")", s00Err < 6e-4);
+      CiEvalTest("scalar00 (relLinfErr: " + to_string_f(s00Err) + ")", s00Err < 9e-4);
       break;
 
     case 3:

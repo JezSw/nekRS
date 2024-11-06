@@ -18,3 +18,6 @@ help:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+livehtml: html
+	SKIPDOXYGEN=1 sphinx-autobuild --no-initial --re-ignore '.*\.swp' --ignore source/doxygen "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

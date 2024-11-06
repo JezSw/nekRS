@@ -83,6 +83,7 @@ using dlong = long long int;
 #include <cstdint>
 #include <sys/stat.h>
 #include <cfenv>
+#include <csignal>
 
 #ifdef CPPTRACE_ENABLED
 #include <cpptrace/cpptrace.hpp>
@@ -159,13 +160,13 @@ namespace
 constexpr double targetTimeBenchmark{0.5};
 
 constexpr int BLOCKSIZE = 256;
-constexpr int ALIGN_SIZE = 1024;
+constexpr int ALIGN_SIZE_BYTES = 256;
 constexpr int NSCALAR_MAX = 99;
 const occa::memory o_NULL;
 
 template <typename T> unsigned int alignStride(unsigned int stride)
 {
-  const auto pageW = ALIGN_SIZE / sizeof(T);
+  const auto pageW = ALIGN_SIZE_BYTES / sizeof(T);
   if (stride % pageW) {
     stride = (stride / pageW + 1) * pageW;
   }
@@ -248,6 +249,18 @@ template <typename T = dfloat> void o_print(const occa::memory &o_u, const std::
     msg << i << ", ";
   }
   std::cerr << msg.str() << std::endl;
+}
+
+sigset_t oldSigSet, newSigSet;
+
+void blockSignal(int signal) {
+    sigemptyset(&newSigSet);
+    sigaddset(&newSigSet, signal);
+    sigprocmask(SIG_BLOCK, &newSigSet, &oldSigSet);
+}
+
+void unblockSignal(int signal) {
+    sigprocmask(SIG_SETMASK, &oldSigSet, nullptr);
 }
 
 } // namespace

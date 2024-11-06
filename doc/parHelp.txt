@@ -31,6 +31,7 @@ startFrom                   "<string>"
                               + u                                      read velocity 
                               + t                                      read temperature
                               + s00 s01 s02 ...                        read scalars 
+                              + int                                    use point interpolation
 
 timeStepper                 tombo1, tombo2 [D], tombo3
 
@@ -188,7 +189,8 @@ regularization
                                                                        (has to be applied manually in case user user props)
                               +c0                                      make viscosity C0
                               +scalingCoeff=<float>
-                              +decaythreshold=<float>                  decay exponent threshold
+                              +noiseThreshold=<float>                  smaller values will be considered to be noise
+                              +decayThreshold=<float>
                               +activationWidth=<float>                 half-width of activation function
 ----------------------------------------------------------------------------------------------------------------------
 [MESH]
