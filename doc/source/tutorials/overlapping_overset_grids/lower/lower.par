@@ -17,6 +17,9 @@ residualTol = 1e-8
 density = 1
 viscosity = -100
 
+[NEKNEK]
+boundaryEXTOrder = 2
+
 [MESH]
 file = "lower.re2"
 
