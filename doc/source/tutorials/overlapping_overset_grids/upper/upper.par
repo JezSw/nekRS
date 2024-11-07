@@ -7,7 +7,7 @@ dt = targetCFL = 0.4 + initial=1e-1
 timeStepper = bdf2
 checkpointControl = steps
 checkpointInterval = 20
-udf = "hillnn.udf"
+udf = "../hillnn.udf"
 
 [PROBLEMTYPE]
 equation = navierstokes
@@ -21,4 +21,4 @@ viscosity = -100
 file = "upper.re2"
 
 [CASEDATA]
-interpolated_bc_id = 2
+interpolated_bc_id = 3
