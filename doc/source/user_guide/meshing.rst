@@ -194,26 +194,41 @@ To keep the following summary table general, the variable names are referred to 
 the ``mesh`` object, without any differentiation between whether that ``mesh`` object is the object on
 ``nrs`` or ``nrs->cds``.
 
+.. table:: Important ``mesh_t`` members
+   :name:  mesh_data
+
 ================== ============================ ================== =================================================
-Variable Name      Size                         Device?            Meaning
+Variable Name      Size                         Host or Device?           Meaning
 ================== ============================ ================== =================================================
-``comm``           1                                               MPI communicator
-``device``         1                                               backend device
-``dim``            1                                               spatial dimension of mesh
-``elementInfo``    ``Nelements``                                   phase of element (0 = fluid, 1 = solid)
-``EToB``           ``Nelements * Nfaces``       :math:`\checkmark` boundary ID for each face
-``N``              1                                               polynomial order for each dimension
-``NboundaryFaces`` 1                                               *total* number of faces on a boundary (rank sum)
-``Nelements``      1                                               number of local elements owned by current process
-``Nfaces``         1                                               number of faces per element
-``Nfp``            1                                               number of quadrature points per face
-``Np``             1                                               number of quadrature points per element
-``rank``           1                                               parallel process rank
-``size``           1                                               size of MPI communicator
-``vmapM``          ``Nelements * Nfaces * Nfp`` :math:`\checkmark` quadrature point index for faces on boundaries
-``x``              ``Nelements * Np``           :math:`\checkmark` :math:`x`-coordinates of quadrature points
-``y``              ``Nelements * Np``           :math:`\checkmark` :math:`y`-coordinates of quadrature points
-``z``              ``Nelements * Np``           :math:`\checkmark` :math:`z`-coordinates of quadrature points
+``comm``           1                            Host               MPI communicator
+``device``         1                            Host               backend device
+``dim``            1                            Host               spatial dimension of mesh
+``elementInfo``    ``Nelements``                Host               phase of element (0 = fluid, 1 = solid)
+``EToB``           ``Nelements * Nfaces``       Both               mapping of elements to type of boundary condition
+``N``              1                            Host               polynomial order for each dimension
+``NboundaryFaces`` 1                            Host               *total* number of faces on a boundary (rank sum)
+``Nelements``      1                            Host               number of local elements owned by current process
+``Nfaces``         1                            Host               number of faces per element
+``Nfp``            1                            Host               number of quadrature points per face
+``Np``             1                            Host               number of quadrature points per element
+``rank``           1                            Host               parallel process rank
+``size``           1                            Host               size of MPI communicator
+``Nfields``        1                            Host               Number of fields passed to the PDE solver
+``cht``            1                            Host               conjugate heat transfer status (0 = off, 1 = on)
+``vmapM``          ``Nelements * Nfaces * Nfp`` Both               quadrature point index for faces on boundaries
+``x``              ``Nelements * Np``           Both               :math:`x`-coordinates of physical quadrature points
+``y``              ``Nelements * Np``           Both               :math:`y`-coordinates of physical quadrature points
+``z``              ``Nelements * Np``           Both               :math:`z`-coordinates of physical quadrature points
+``Nvgeo``          ``<chk>``                    <chk>              Volumetric geometric factors
+``Nggeo``          ``<chk>``                    <chk>              Second-order volumetric geometric factors
+``vertexNodes``    ``<chk>``                    <chk>              Vertex nodes' indices
+``edgeNodes``      ``<chk>``                    <chk>              Edge nodes' indices
+``edgeNodes``      ``<chk>``                    <chk>              List of element reference interpolation nodes on element faces
+``o_LMM``          ``<chk>``                    Device             Lumped mass matrix
+``U``              ``Nelements*Np``             Both               Mesh velocity (often used with ALE solver)
+``D``              ``Nelements*Np``             Both               1D Differentiation matrix
+``o_vgeo``         ``<chk>``                    Device             Volume geometric factors
+``o_sgeo``         ``<chk>``                    Device             Surface geometric factors
 ================== ============================ ================== =================================================
 
 TODO: example of using these, explain what's happening line by line (grep in examples dir)
