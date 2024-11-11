@@ -76,7 +76,7 @@ To use ``reatore2``, simply compile it using ``./maketools reatore2`` as discuss
 
 
 Using ``gmsh2nek``
------------------
+------------------
 Prior to using ``gmsh2nek``, it is recommended you compile it using a script that is already
 included within Nek5000. In addition to the compilers necessary to use `Nek5000 <https://nek5000.github.io/NekDoc/quickstart.html>`__,
 ``gmsh2nek`` requires ``cmake``. Simply switch to ``path/to/Nek5000/tools``, and execute the script
@@ -102,7 +102,7 @@ checklist:
 
 
 Using ``exo2nek``
----------------
+-----------------
 
 Similar to ``gmsh2nek``, the Nek5000 tool ``exo2nek`` tool converts ``.exo`` meshes into the native ``.re2`` format.
 It is compiled similary using ``./maketools exo2nek``. All features and restrictions from ``gmsh2nek`` apply here as well.
@@ -175,12 +175,11 @@ available in NekRS <Boundary conditions>`__.
    end
 
 
-The ``mesh_t`` struct
----------------------
-TODO: verify wrt v24, add some details about bcData and how BCs are set in udf
+Mesh-related data structures
+----------------------------
 
-This section describes commonly-used variables related to the mesh, which are all stored
-on data structures of type ``mesh_t``. For the fluid domain, all mesh information is stored
+This section describes commonly-used data structures related to the mesh, the first of which is ``mesh_t``.
+For the fluid domain, all mesh information is stored
 in the ``nrs->mesh`` object, while for scalars such as temperature, mesh information is stored on the
 ``nrs->cds->mesh`` object. These meshes differ in cases such as conjugate heat transfer, where the
 velocity mesh is distinct from the temperature mesh. NekRS performs domain decomposition to ensure
@@ -195,8 +194,7 @@ the ``mesh`` object, without any differentiation between whether that ``mesh`` o
 ``nrs`` or ``nrs->cds``.
 
 .. table:: Important ``mesh_t`` members
-   :name:  mesh_data
-
+  :name:  mesh_data
 ================== ============================ ================== =================================================
 Variable Name      Size                         Host or Device?           Meaning
 ================== ============================ ================== =================================================
@@ -231,12 +229,38 @@ Variable Name      Size                         Host or Device?           Meanin
 ``o_sgeo``         ``<chk>``                    Device             Surface geometric factors
 ================== ============================ ================== =================================================
 
-TODO: example of using these, explain what's happening line by line (grep in examples dir)
+
+The second most important structure is ``bcData``. It is often referred to in the ``oudf`` kernels to set boundary conditions.
+Its members are typically accessed on the device, and the kernels for setting boundary conditions will iterate over all the GLL points
+on a given boundary, setting these values appropriately for each point. The following table details what the most important members
+of this structure mean.
+
+.. table:: Important ``bcData`` members
+  :name:  bcData_members
+
+===================== =======================================================
+Variable Name                Meaning
+===================== =======================================================
+``idM``                Element's mesh ID (?)
+``fieldOffset``        Size of a field (offset for a given component)
+``id``                 Sideset ID
+``time``               Current time
+''x/y/z``              X/Y/Z coordinates
+``nx/ny/nz``           X/Y/Z normals
+``t1x/t1y/t1z``        X/Y/Z tangents
+``t2x/t2y/t2z``        X/Y/Z bitangents
+``p/u/v/w``            Pressure and the 3 velocity components
+``scalarID``           ID of the scalar as per the ``par`` file 
+``s``                  Scalar value
+``flux``               Flux value for flux BC
+``meshu/meshv/meshw``  Mesh velocity components (used in ALE framework)
+``trans/diff``         Mesh transport/diffusion coefficients (ALE framework)
+===================== =======================================================
+
+
 
 Mesh modification in NekRS
 --------------------------
-
-TODO: mesh modification 3D example w/o usr file (msre?)
 
 Like Nek5000, NekRS also allows for mesh modification during run time. Static, one-time deformations can be performed during the initialization phase using the ``usr`` file. Typically, the best place to perform such mesh
 modifications would be the ``usrdat2`` subroutine. One of the most common deformations performed is scaling the entire mesh by a constant factor. For non-dimensionalization of a case, this factor is often the reciprocal of
@@ -274,8 +298,10 @@ the mesh deformation themselves using ``solver = user`` in the ``[MESH]`` block,
 
 Miscellaneous Tips
 ------------------
-TODO:
-preconditioner, other settings?
+
+Since high-order meshes have a higher number of degrees of freedom, it is important to note that these meshes
+often do not have as high of an element count as lower-order CFD solvers use. The overall metric to pay attention
+to is the number-of-degrees of freedom, which is impacted by both the element count and their order.
 
 In higher-order finite elements, mesh refinement can be performed in two ways:
 
