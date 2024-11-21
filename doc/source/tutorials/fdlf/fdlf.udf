@@ -38,7 +38,7 @@ deviceMemory<dfloat> o_Uexact, o_Texact;
   }
 }
 
-void velocityDirichletConditions(bcData *bc)
+void codedFixedValueVelocity(bcData *bc)
 {
   const dfloat yhat = bc->y / p_height;
   const dfloat yhat2 = yhat * yhat;
@@ -47,7 +47,7 @@ void velocityDirichletConditions(bcData *bc)
   bc->w = 0.0;
 }
 
-void scalarDirichletConditions(bcData *bc)
+void codedFixedValueScalar(bcData *bc)
 {
   const dfloat yhat = bc->y / p_height;
   const dfloat yhat2 = yhat * yhat;
@@ -55,7 +55,7 @@ void scalarDirichletConditions(bcData *bc)
   bc->s = p_tscale*(3.0*yhat2 - 2.0*yhat4 - 39.0/280.0) + p_tin;
 }
 
-void scalarNeumannConditions(bcData *bc)
+void codedFixedGradientScalar(bcData *bc)
 {
   bc->flux = p_tflux;
 }
@@ -148,11 +148,12 @@ void UDF_ExecuteStep(double time, int tstep)
     o_Texact.resize(mesh->Nlocal);
     computeUexact(mesh->Nlocal, mesh->o_y, o_Uexact);
     computeTexact(mesh->Nlocal, mesh->o_x, mesh->o_y, o_Texact);
-  
+    /*
     std::vector<occa::memory> o_fldList;
     o_fldList.push_back(o_Uexact);
     o_fldList.push_back(o_Texact);
     fld::write("ref", time, tstep, o_fldList, true, false, 0, false);
+    */
   }
 
   // check error
