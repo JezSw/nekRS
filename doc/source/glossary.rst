@@ -35,6 +35,9 @@ Glossary
     CPU
       Central Processing Unit
 
+    DES
+      Detached Eddy Simulation
+
     DPC++
       Data Parallel C++, an programming Language implementation of Intel's :term:`oneAPI` / :term:`SYCL`
 

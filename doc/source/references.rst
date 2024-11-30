@@ -11,9 +11,9 @@ References
     *Proceedings of the American Institute of Aeronautics and Astronautics*
     (1996)
 
-.. [Kok] Kok, J.C. and Spekreijse, S.P. "Efficient and Accurate Implementation of the :math:`k`-:math:`\omega`
-    Turbulence Model in the NLR Multi-Block Navier-Stokes System," *European Congress on Computational Methods
-    in Applied Sciences and Engineering* (2000)
+.. [Kok2000] Kok, J.C. and Spekreijse, S.P. "Efficient and Accurate Implementation of the :math:`k`-:math:`\omega` Turbulence Model in the NLR Multi-Block Navier-Stokes System," *European Congress on Computational Methods in Applied Sciences and Engineering* (2000)
+
+.. [Kumar2024] Kumar, Vishal, et al. "DDES Study of Confined and Unconfined NACA Wing Sections Using Spectral Elements." *arXiv preprint arXiv:2410.05561* (2024).
 
 .. [Launder] Launder, B.E. and Spalding, D.B. "The Numerical Computation of Turbulent Flows,"
     *Computer Methods in Applied Mechanics and Engineering* **3** 269-289 (1974)
@@ -39,3 +39,5 @@ References
 .. [Tombo2024] Tomboulides, Ananias, Nadish Saini, Dillon Shaver, Aleksandr Obabko, Haomin Yuan, Elia Merzari, and Paul Fischer. "A Robust Spectral Element Implementation of the K–Τ Rans Model in Nek5000/Nekrs." *Available at SSRN 4785448.* (2024)
 
 .. [Wilcox] Wilcox, D.C. "Turbulence Modeling for CFD," *DCW Industries* (2006)
+
+.. [Wilcox2008] Wilcox, David C. "Formulation of the k-ω turbulence model revisited." *AIAA journal 46, no. 11: 2823-2838. `doi.org/10.2514/1.36541 <https://doi.org/10.2514/1.36541>`* (2008)
