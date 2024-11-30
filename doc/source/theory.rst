@@ -298,3 +298,7 @@ All coefficients in the :math:`k-\tau` model are identical to the standard :math
   \beta = 0.0708; \,\, \beta^*=0.09; \,\, \alpha=0.52; \,\, \sigma_k= \frac{1}{0.6} \,\, \sigma_\tau=2.0; \,\, \sigma_d=\frac{1}{8}
 
 Further theoretical and implementation details on the :math:`k`-:math:`\tau` model can be found in [Tombo2024]_.
+
+.. note::
+
+  NekRS currently offers only wall resolved RANS models. The boundary condition for both :math:`k` and :math:`\tau` transport equations for wall resolved RANS are of Dirichlet type and equal to zero.
