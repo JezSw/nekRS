@@ -3,14 +3,11 @@
 Models and Source Terms
 =======================
 
-With the exception of :term:`LES` modelling, the :ref:`User-Defined Host Functions (.udf) <udf_functions>` file in NekRS
-provides the necessary and sufficient interface to load most of the physics models (and postprocessing capabilities).
-For instance, the :ref:`RANS <rans_models>` and :ref:`lowMach compressible <low_mach>` models available in nekRS are
-loaded by including corresponding header files in ``.udf`` and by calling the appropriate functions from the standard
-functions in ``.udf``. Appropriate boundary conditions for the momentum and scalar transport equations are specified in
-the :ref:`okl block <okl_block>` (or  in the included ``.oudf`` file). Further, any custom source terms that may need to
-be added to the momentum or scalar equations are also interfaced through the ``.udf`` file. Before proceeding it is,
-therefore, highly recommended that users familiarize themselves with all components of :ref:`.udf file <udf_functions>`. 
+With the exception of :term:`LES` modelling, the :ref:`User-Defined Host Functions (.udf) <udf_functions>` file in NekRS provides the necessary and sufficient interface to load most of the physics models (and postprocessing capabilities).
+For instance, the :ref:`RANS <rans_models>` and :ref:`lowMach compressible <low_mach>` models available in nekRS are loaded by including corresponding header files in ``.udf`` and by calling the appropriate functions from the standard functions in ``.udf``.
+Appropriate boundary conditions for the momentum and scalar transport equations are specified in the :ref:`okl block <okl_block>` (or  in the included ``.oudf`` file).
+Further, any custom source terms that may need to be added to the momentum or scalar equations are also interfaced through the ``.udf`` file.
+Before proceeding it is, therefore, highly recommended that users familiarize themselves with all components of :ref:`.udf file <udf_functions>`. 
 
 Turbulence models
 -----------------
@@ -166,8 +163,7 @@ To use the :term:`RANS` model in nekRS, first add the necessary include file at 
 
   #include "RANSktau.hpp"
 
-The header file will make the required :term:`RANS` subroutines accessible in the ``.udf`` file which add the necessary
-source terms for the :math:`k` and :math:`\tau` transport equations and modify the diffusion operator in the momentum equation.
+The header file will make the required :term:`RANS` subroutines accessible in the ``.udf`` file which add the necessary source terms for the :math:`k` and :math:`\tau` transport equations and modify the diffusion operator in the momentum equation.
 
 Further, in the ``UDF_Setup()`` subroutine, add the following code snippet to initialize the :term:`RANS` model,
 
@@ -183,24 +179,19 @@ Further, in the ``UDF_Setup()`` subroutine, add the following code snippet to in
     RANSktau::setup(ktauFieldStart);
   }
 
-``RANSktau::`` is the namespace declared in the header file ``RANSktau.hpp`` which contains all required :term:`RANS` 
-subroutine call definitions.
+``RANSktau::`` is the namespace declared in the header file ``RANSktau.hpp`` which contains all required :term:`RANS` subroutine call definitions.
 
-``ktauFieldStart`` is the index of the scalar field where the turbulent kinetic energy, ``k``, is stored. In the above
-example, the :term:`TKE` field corresponds to ``SCALAR01`` as specified in ``.par`` file (see 
-:ref:`tutorial <tutorial_rans>` for details).
+``ktauFieldStart`` is the index of the scalar field where the turbulent kinetic energy, ``k``, is stored. 
+In the above example, the :term:`TKE` field corresponds to ``SCALAR01`` as specified in ``.par`` file (see :ref:`tutorial <tutorial_rans>` for details).
 
 .. warning::
   The ``ktauFieldStart`` index must be consistent with the chosen scalar index specified by user in ``.par`` file for :term:`TKE`.
 
 .. note::
-  nekRS assumes that the :math:`\tau` field array always follows the TKE scalar field. Thus, in the above example nekRS
-  assumes :math:`\tau` field index is 2.
+  nekRS assumes that the :math:`\tau` field array always follows the TKE scalar field. Thus, in the above example nekRS assumes :math:`\tau` field index is 2 (i.e., ``SCALAR02``).
 
-``nrs->userProperties`` and ``nrs->userScalarSource`` are the pointer variables to internal subroutines in nekRS which
-are used to define the user specified transport properties and source terms for the passive scalar equations,
-respectively. As in the above code, these are assigned the pointers to ``uservp`` and ``userq`` routines which must be
-defined in the ``.udf`` file as follows,
+``nrs->userProperties`` and ``nrs->userScalarSource`` are the pointer variables to internal subroutines in nekRS which are used to define the user specified transport properties and source terms for the passive scalar equations, respectively.
+As in the above code, these are assigned the pointers to ``uservp`` and ``userq`` routines which must be defined in the ``.udf`` file as follows,
 
 .. code-block:: cpp
 
@@ -214,8 +205,7 @@ defined in the ``.udf`` file as follows,
     RANSktau::updateSourceTerms();
   }
 
-The ``updateProperties()`` call computes the diffusion coefficients for the momentum and :math:`k`-:math:`\tau`
-equations (see :ref:`RANS theory <rans_models>` for details on RANS model equations), which are,
+The ``updateProperties()`` call computes the diffusion coefficients for the momentum and :math:`k`-:math:`\tau` equations (see :ref:`RANS theory <rans_models>` for details on RANS model equations), which are,
 
 .. math::
   \text{momentum-equation} &\rightarrow \mu + \mu_t \\
@@ -227,20 +217,18 @@ equations (see :ref:`RANS theory <rans_models>` for details on RANS model equati
   If the user desires to extract :math:`\mu_t` array, say for post-processing purpose, it can be accessed as follows in the ``.udf`` file:
  ``auto o_mue_t = RANSktau::o_mue_t();``
 
-while the ``updateSourceTerms()`` call computes all source terms on the right hand side of the :math:`k` and 
-:math:`\tau` transport equations, which are, 
+while the ``updateSourceTerms()`` call computes all source terms on the right hand side of the :math:`k` and :math:`\tau` transport equations, which are, 
 
 .. math::
   k\text{-equation} &\rightarrow P - \rho \beta^* \frac{k}{\tau} \\
   \tau\text{-equation} &\rightarrow -\alpha \rho \tau^2 S^2 + \rho \beta - 8 \Gamma_\tau \left( \nabla \tau^{1/2} \cdot \nabla \tau^{1/2} \right) + C_{D_\tau}
 
-Note that the ``uservp`` and ``userq`` routines are called at each time step by the solver. The above calls will, 
-therefore, update the diffusion properties and source terms at each time step for all GLL points.
+Note that the ``uservp`` and ``userq`` routines are called at each time step by the solver. 
+The above calls will, therefore, update the diffusion properties and source terms at each time step for all GLL points.
 
-The final necessary step in the model setup for the :math:`k`-:math:`\tau` :term:`RANS` model is the specification of
-the boundary conditions for the :math:`k` and :math:`\tau` transport equations. As explained in the 
-:ref:`RANS theory <rans_models>` section, the wall boundary condition for both :math:`k` and :math:`\tau` equations are
-zero. These must be explicitly assigned in the :ref:`okl block <okl_block>` section of ``.udf`` file,  
+The final necessary step in the model setup for the :math:`k`-:math:`\tau` :term:`RANS` model is the specification of the boundary conditions for the :math:`k` and :math:`\tau` transport equations. 
+As explained in the :ref:`RANS theory <rans_models>` section, the wall boundary condition for both :math:`k` and :math:`\tau` equations are zero.
+These must be explicitly assigned in the :ref:`okl block <okl_block>` section of ``.udf`` file,  
 
 .. code-block:: cpp
 
@@ -251,16 +239,24 @@ zero. These must be explicitly assigned in the :ref:`okl block <okl_block>` sect
     if(bc->scalarId == 1 || bc->scalarId == 2) bc->s = 0;
   }
 
+``bc->scalarId`` is the scalar index used to identify the :math:`k` and :math:`\tau` fields in the **okl** block.
+Consistent with the ``ktauFieldStart`` specified above in the ``UDF_setup`` routine, ``bc->scalarId == 1`` corresponds to :math:`k` and ``bc->scalarId == 2`` corresponds to:math:`\tau` field.
+
 .. note::
-  For **wall resolved** :term:`RANS` simulations, the boundary conditions for both :math:`k` and :math:`\tau` transport
-  equations are of Dirichlet type at the wall and equal to zero.
+  For **wall resolved** :term:`RANS` simulations, the boundary conditions for both :math:`k` and :math:`\tau` transport equations are of Dirichlet type at the wall and equal to zero.
 
 .. warning::
-  It is highly recommended to familiarize with :ref:`okl block <okl_block>` for proper boundary specification. The above
-  example assumes that the computational domain has no inlet boundaries. In case there are inlet boundaries present,
-  they will also have Dirichlet type boundaries for the :math:`k` and :math:`\tau` transport equations and it will be
-  necessary to differentiate the value of :math:`k` and :math:`\tau` at the walls (zero) from those at the inlet
-  (problem dependent). This is done using ``bc->id`` identifier in the :term:`okl block`. 
+
+ It is highly recommended to familiarize with :ref:`okl block <okl_block>` for proper boundary specification. 
+ The above example assumes that the computational domain has no inlet boundaries. In case there are inlet boundaries present, they will also have Dirichlet type boundary condition for the :math:`k` and :math:`\tau` transport equations and it will be necessary to differentiate the value of :math:`k` and :math:`\tau` at the walls (zero) from those at the inlet (problem dependent).
+ This is done using ``bc->id`` identifier in the :term:`okl block`. 
+ See :ref:`boundary conditions section <boundary_conditions>` for usage details on how to specify boundary conditions.
+
+.. note::
+  For RANS simulations with an inlet, it is recommended to obtain the velocity, :math:`k` and :math:`\tau` inlet profiles by running an auxiliary RANS simulation for the inlet geometry.
+  For instance, if the domain inlet is a pipe, run a RANS simulation in a pipe geometry with the same dimension and desired Reynolds number first to obtain a fully developed profile for velocity, :math:`k` and :math:`\tau`. 
+  The fully developed profile can then be read and specified as inlet Dirichlet condition for the target case through ``nrs->usrwrk`` array.
+  See :ref:`boundary conditions section <boundary_conditions>` for details.
   
 Low-Mach Compressible Model
 ---------------------------
@@ -269,10 +265,10 @@ Low-Mach Compressible Model
 
   Pertinent example cases: `Moving cylinder <https://github.com/Nek5000/nekRS/tree/next/examples/mv_cyl>`_; `Low Mach test <https://github.com/Nek5000/nekRS/tree/next/examples/lowMach>`_
 
-The low-Mach compressible model in NekRS is available through the routines defined in ``src/nrs/plugins/lowMach.hpp``
-which must be included in the ``.udf`` file. As default, this user guide assumes, and it is strongly recommended, that
-the low-Mach equations are solved in non-dimensional format. However, appropriate instructions are included herein for
-dimensional solve. For details on the low-Mach governing equation refer the :ref:`theory section <low_mach>`.
+The low-Mach compressible model in NekRS is available through the routines defined in ``src/nrs/plugins/lowMach.hpp`` which must be included in the ``.udf`` file.
+As default, this user guide assumes, and it is strongly recommended, that the low-Mach equations are solved in non-dimensional format.
+However, appropriate instructions are included herein for dimensional solve.
+For details on the low-Mach governing equation refer the :ref:`theory section <low_mach>`.
 
 Get started with including the header file at the top of your case ``.udf`` file and declaring required global occa arrays,
 
@@ -283,9 +279,8 @@ Get started with including the header file at the top of your case ``.udf`` file
   deviceMemory<dfloat> o_beta;
   deviceMemory<dfloat> o_kappa;
 
-``o_beta`` is the global cache for storing the local isobaric expansion coefficients for all GLL points, while the
-``o_kappa`` array stores the isothermal expansion coefficient. Next, in the ``UDF_Setup()`` the following code snippet
-is required,
+``o_beta`` is the global cache for storing the local isobaric expansion coefficients for all GLL points, while the ``o_kappa`` array stores the isothermal expansion coefficient. 
+Next, in the ``UDF_Setup()`` the following code snippet is required,
 
 .. code-block:: cpp
 
@@ -304,35 +299,28 @@ is required,
     lowMach::setup(alphaRef, o_beta, o_kappa);
   }
 
-``nrs->userProperties``, ``nrs->userScalarSource`` and ``nrs->userDivergence`` are internal nekRS pointers to provide
-an interface to user routines for specifying transport properties, source terms for scalar equation and (thermal)
-divergence for the right hand side of continuity equation, respectively. ``uservp``, ``userq`` and ``userqtl`` are the
-corresponding routines to be defined in the ``.udf`` file, described below. 
+``nrs->userProperties``, ``nrs->userScalarSource`` and ``nrs->userDivergence`` are internal nekRS pointers to provide an interface to user routines for specifying transport properties, source terms for scalar equation and (thermal) divergence for the right hand side of continuity equation, respectively.
+``uservp``, ``userq`` and ``userqtl`` are the corresponding routines to be defined in the ``.udf`` file, described below. 
 
-The essential call in ``UDF_Setup()`` is ``lowMach::setup`` which initializes the required internal functions and arrays
-for the low-Mach compressible model. It requires three arguments. 
-
-First, ``alpharef`` is the coefficient of the time derivative of the thermodynamic pressure,
-:math:`\frac{dp_t\dagger}{dt^\dagger}`, source term in the energy equation (see :ref:`theory section <low_mach>`).
+The essential call in ``UDF_Setup()`` is ``lowMach::setup`` which initializes the required internal functions and arrays for the low-Mach compressible model.
+It requires three arguments. 
+First, ``alpharef`` is the coefficient of the time derivative of the thermodynamic pressure, :math:`\frac{dp_t\dagger}{dt^\dagger}`, source term in the energy equation (see :ref:`theory section <low_mach>`).
 
 .. note::
   
-  For real gases ``alpharef`` :math:`= \frac{p_0}{\rho_0 c_{p0} T_0}`, while for ideal gas assumption ``alpharef``
-  :math:`= \frac{\gamma_0 - 1}{\gamma_0}`, where :math:`\gamma_0` is the isentropic expansion coefficient (1.4 in the above example).
+  For real gases ``alpharef`` :math:`= \frac{p_0}{\rho_0 c_{p0} T_0}`, while for ideal gas assumption ``alpharef`` :math:`= \frac{\gamma_0 - 1}{\gamma_0}`, where :math:`\gamma_0` is the isentropic expansion coefficient (1.4 in the above example).
 
 .. note::
-  :math:`p_0` and :math:`T_0` are the pressure and temperature at reference conditions. :math:`\rho_0`, :math:`c_{p0}`
-  and :math:`\gamma_0` are the density, specific heat capacity and isentropic expansion coefficient at reference conditions. 
+  :math:`p_0` and :math:`T_0` are the pressure and temperature at reference conditions. :math:`\rho_0`, :math:`c_{p0}` and :math:`\gamma_0` are the density, specific heat capacity and isentropic expansion coefficient at reference conditions. 
 
 .. warning::
 
   For solving the low-Mach equations in dimensional format, ``alpharef`` must be unity.
 
 The remaining arguments to the ``lowMach::setup`` call are the pointers to the ``o_beta`` and ``o_kappa`` occa arrays. 
-Memory allocation for the ``o_beta`` and ``o_kappa`` arrays must be done using the ``resize`` functions and their extent
-must be equal to ``nrs->fieldOffset``, which is the total number of GLL points.
+Memory allocation for the ``o_beta`` and ``o_kappa`` arrays must be done using the ``resize`` functions and their extent must be equal to ``nrs->fieldOffset``, which is the total number of GLL points.
 
-The required transport properties and the expansion coefficients arrays are populated in the ``uservp`` routine,
+The required transport properties and the expansion coefficient arrays are populated in the ``uservp`` routine,
 
 .. code-block:: cpp
 
@@ -352,11 +340,9 @@ The required transport properties and the expansion coefficients arrays are popu
              o_kappa)
   }
 
-``mesh`` and ``cds`` are temporary pointers to the ``nrs->mesh`` and ``nrs->cds`` objects, which make referencing the
-object members easier subsequently. ``fillProp`` is a kernel which has to be defined in the :ref:`okl block <okl_block>`
-section of ``.udf`` file to populate the transport property arrays for the fluid, ``nrs->o_prop``, and temperature,
-``cds->o_prop``, equations and also the expansion coefficient arrays. The details of the ``fillProp`` kernel are problem
-dependent. An example for ideal gas assumption is shown below.
+``mesh`` and ``cds`` are temporary pointers to the ``nrs->mesh`` and ``nrs->cds`` objects, which make referencing the object members easier subsequently. ``fillProp`` is a kernel which has to be defined in the :ref:`okl block <okl_block>` section of ``.udf`` file to populate the transport property arrays for the fluid (``nrs->o_prop``) and temperature (``cds->o_prop``) equations and also the expansion coefficient arrays.
+The details of the ``fillProp`` kernel are problem dependent.
+An example for ideal gas assumption is shown below.
 
 .. code-block:: cpp
 
@@ -377,8 +363,8 @@ dependent. An example for ideal gas assumption is shown below.
         const int id = e * p_Np + n;
 
         const dfloat rcpTemp = 1 / TEMP[id];
-        UPROP[id + 0 * uOffset] = 1e-2;
-        SPROP[id + 0 * sOffset] = 1e-2;
+        UPROP[id + 0 * uOffset] = 1e-2;      //1/Re
+        SPROP[id + 0 * sOffset] = 1e-2;      //1/Pe
         UPROP[id + 1 * uOffset] = p0th * rcpTemp;
         SPROP[id + 1 * sOffset] = p0th * rcpTemp;
 
@@ -389,46 +375,47 @@ dependent. An example for ideal gas assumption is shown below.
   }
   #endif
 
-``nrs->o_prop`` stores the fluid viscosity for all GLL points followed by density, while ``cds->o_prop`` stores the
-diffusivity followed by the product of density and specific heat capacity at constant pressure. Corresponding array
-offsets are, therefore, required by ``fillProp`` to identify the locations where each property is stored.
-``nrs->fieldOffset`` (``uOffset``) is the total number of GLL points in the fluid sub-domain, while the
-``cds->fieldOffset[0]`` (``sOffset``) is the total number of GLL points in the temperature sub-domain. 
+``nrs->o_prop`` stores the fluid viscosity for all GLL points followed by density, while ``cds->o_prop`` stores the diffusivity followed by the product of density and specific heat capacity at constant pressure.
+Corresponding array offsets are, therefore, required by ``fillProp`` to identify the locations where each property is stored.
+``nrs->fieldOffset`` (``uOffset``) is the total number of GLL points in the fluid sub-domain, while the ``cds->fieldOffset[0]`` (``sOffset``) is the total number of GLL points in the temperature sub-domain. 
 
 .. note::
 
   For a non-CHT case, ``nrs->fieldOffset`` will be equal to ``cds->fieldOffset[0]``.
 
-As mentioned earlier, in the above example ``fillProp`` kernel is specifically written for a calorically perfect ideal
-gas assumption with constant viscosity and thermal conductivity and with low-Mach equations solved in non-dimensional
-form. The property specification is as follows,
+As mentioned earlier, in the above example ``fillProp`` kernel is specifically written for a calorically perfect ideal gas assumption with constant viscosity and thermal conductivity and with low-Mach equations solved in non-dimensional form.
+Description of the property array specification depending on the case type is as follows (see :ref:`theory section <low_mach>` for description of notation),
 
-  * ``UPROP[id + 0 * uOffset]`` :math:`\rightarrow \frac{1}{Re} \rightarrow` non-dimensional viscosity (:math:`Re` is Reynolds number).
-  * ``UPROP[id + 1 * uOffset]`` :math:`\rightarrow \rho^\dagger \rightarrow` non-dimensional density. :math:`\rho^\dagger = p_t^\dagger/T^\dagger` for an ideal gas.
-  * ``SPROP[id + 0 * sOffset]`` :math:`\rightarrow \frac{1}{Pe} \rightarrow` non-dimensional temperature diffusivity (:math:`Pe` is Peclet number)
-  * ``SPROP[id + 1 * sOffset]`` :math:`\rightarrow \rho^\dagger c_p^\dagger \rightarrow` product of non-dimensional density and non-dimensional specific heat (:math:`c_p^\dagger = 1` for a calorically perfect gas).
-  * ``BETA[id]`` :math:`\rightarrow \beta^\dagger \rightarrow` non-dimensional isobaric expansion coefficient. :math:`\beta^\dagger = 1/T^\dagger` for ideal gas.
-  * ``KAPPA[id]`` :math:`\rightarrow \kappa^\dagger \rightarrow` non-dimensional isothermal expansion coefficient. :math:`\kappa^\dagger = 1/p_t^\dagger` for ideal gas.
++-----------------------------+---------------------------------------------------------------------------------------------------------+--------------------------------------------+
+| Array Name                  | Non-dimensional                                                                                         | Dimensional                                |
++-----------------------------+--------------------------------------------------------------------+------------------------------------+---------------------------+----------------+
+|                             | Ideal Gas                                                          | Real Gas                           | Ideal Gas                 |  Real Gas      |
++-----------------------------+--------------------------------------------------------------------+------------------------------------+---------------------------+----------------+
+| ``UPROP[id + 0 * uOffset]`` | :math:`\mu^\dagger/Re`                                             | :math:`\mu^\dagger/Re`             | :math:`\mu`               | :math:`\mu`    |
++-----------------------------+--------------------------------------------------------------------+------------------------------------+---------------------------+----------------+
+| ``UPROP[id + 1 * uOffset]`` | :math:`\rho^\dagger = p_t^\dagger/T^\dagger`                       | :math:`\rho^\dagger`               | :math:`\rho = p_t/R T`    | :math:`\rho`   |
++-----------------------------+--------------------------------------------------------------------+------------------------------------+---------------------------+----------------+
+| ``SPROP[id + 0 * uOffset]`` | :math:`\lambda^\dagger/Pe`                                         | :math:`\lambda^\dagger/Pe`         | :math:`\lambda`           | :math:`\lambda`|
++-----------------------------+--------------------------------------------------------------------+------------------------------------+---------------------------+----------------+
+| ``SPROP[id + 1 * uOffset]`` | :math:`\rho^\dagger c_p^\dagger= p_t^\dagger c_p^\dagger/T^\dagger`|:math:`\rho^\dagger c_p^\dagger`    | :math:`\rho c_p=p_tc_p/RT`|:math:`\rho c_p`|
++-----------------------------+--------------------------------------------------------------------+------------------------------------+---------------------------+----------------+
+| ``BETA[id]``                | :math:`\beta^\dagger = 1/T^\dagger`                                | :math:`\beta_0 T_0 \beta^\dagger`  | :math:`\beta = 1/T`       | :math:`\beta`  |
++-----------------------------+--------------------------------------------------------------------+------------------------------------+---------------------------+----------------+
+| ``KAPPA[id]``               | :math:`\kappa^\dagger = 1/p_t^\dagger`                             | :math:`\kappa_0 p_0 \kappa^\dagger`|:math:`\kappa = 1/p_t`     | :math:`\kappa` |
++-----------------------------+--------------------------------------------------------------------+------------------------------------+---------------------------+----------------+
 
 .. note::
-  For real gases, the user can specify custom non-dimensional properties to the above arrays. 
-  Note that for real gases the non-dimensional expansion coefficients must be multiplied by corresponding non-dimensional
-  factors, i.e.,
-
-  * ``BETA[id]`` :math:`\rightarrow \beta_0 T_0 \beta_T^\dagger` 
-  * ``KAPPA[id]`` :math:`\rightarrow \kappa_0 p_0 \kappa^\dagger` 
+  For real gases, the user can specify custom non-dimensional properties to the above arrays, depending on the equation of state.
 
 .. note::
-  For an **open system**, the thermodynamic pressure is constant. Thus, :math:`p_t^\dagger=1`. Consequently, ``o_kappa``
-  array is constant and unity.
+  For an **open system**, the thermodynamic pressure is constant. Thus, :math:`p_t^\dagger=1`. Consequently, ``o_kappa`` array is constant and unity.
 
-``userq`` is the user routine to specify any problem dependent source term appearing in the temperature equation (e.g.,
-volumetric source/sink term). See the section on :ref:`scalar source <user_scalar_source>` for details on the procedure
-for including any non-linear source terms in temperature equation.
+``userq`` is the user routine to specify any problem dependent source term appearing in the temperature equation (e.g., volumetric source/sink term).
+See the section on :ref:`scalar source <user_scalar_source>` for details on the procedure for including any non-linear source terms in temperature equation.
 
-For lowMach problems in a **closed system and/or in a moving domain**, it is necessary to add contribution of time
-derivative of thermodynamic pressure to the temperature equation. A sub-routine is available in the ``lowMach::``
-namespace to add this contribution. Include it as follows,
+For lowMach problems in a **closed system and/or in a moving domain**, it is necessary to add contribution of time derivative of thermodynamic pressure to the temperature equation.
+A sub-routine is available in the ``lowMach::`` namespace to add this contribution.
+Include it as follows,
 
 .. code-block:: cpp
 
@@ -445,7 +432,7 @@ The routine ``lowMach::dpdt`` will add the following contribution to  ``nrs->cds
 where ``alpharef`` is the reference non-dimensional coefficient defined earlier in ``UDF_Setup()``.
 
 .. note::
-  For open systems, ``lowMach::dpdt`` call is optional in ``userq``. If called, it will add zero to ``nrs->cds->o_NLT``, since :math:`\frac{dp_t}{dt}=0`.
+  For open systems, ``lowMach::dpdt`` call is not required in ``userq``. If called, it will add zero to ``nrs->cds->o_NLT``, since :math:`\frac{dp_t}{dt}=0`.
 
 Further, lowMach system requires thermal divergence for the right hand side of continuity equation (see :ref:`theory <low_mach>` for details).
 The routine to compute thermal divergence must be included in ``.udf`` as shown below,
@@ -467,9 +454,9 @@ while for ideal gas it is,
   * ``nrs->o_div`` :math:`\rightarrow \frac{1}{\rho^\dagger c_p^\dagger T^\dagger} \left(\nabla \cdot \frac{1}{Pe} \nabla T^\dagger + \dot{q}^\dagger + \frac{\gamma_0-1}{\gamma_0} \frac{d p_t^\dagger}{dt^\dagger}\right) - \frac{1}{p_t^\dagger} \frac{d p_t^\dagger}{d t^\dagger}`
 
 .. note::
-  For **closed system or moving domain problems**, ``lowMach::qThermalSingleComponent`` also computes and updates the
-  time derivative of thermodynamic pressure. It is obtained by combining the continuity and energy equations and
-  subsequent volume integral. Thus, for real gas with constant viscosity and thermal conductivity we get,
+  For **closed system or moving domain problems**, ``lowMach::qThermalSingleComponent`` also computes and updates the time derivative of thermodynamic pressure.
+  It is obtained by combining the continuity and energy equations and subsequent volume integral.
+  Thus, for real gas with constant viscosity and thermal conductivity we get,
 
   * :math:`\frac{d p_t^\dagger}{d t^\dagger} = \frac {1}{A} \left[-\int_\Gamma \vec{v}^\dagger \cdot \vec{n}_\Gamma d\Gamma + \beta_0 T_0 \int_\Omega \frac{\beta_T^\dagger}{\rho^\dagger c_p^\dagger} \left( \nabla \cdot \frac{1}{Pe} \nabla T^\dagger  + \dot{q}^\dagger \right) d\Omega \right]`
 
@@ -478,7 +465,7 @@ while for ideal gas it is,
   :math:`\Omega \rightarrow` computational domain; :math:`\Gamma \rightarrow` domain boundary; :math:`\vec{n}_\Gamma \rightarrow` outward pointing normal.
 
 
-.. note::
+.. warning::
   
   In case of simulations involving multiple species (e.g., reactive flows), ``lowMach::qThermalSingleComponent`` is not valid. 
   A custom user routine will be required to account for divergence contribution from all species
