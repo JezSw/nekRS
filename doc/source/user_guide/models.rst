@@ -476,7 +476,7 @@ Custom Source Terms
 
 NekRS offers the user the option to add custom source terms in ``.udf`` file.
 While the specific construction of the kernels for the user defined source terms will be problem dependent, the following section describes the essential components for building custom source terms for the momenutm and scalar transport equations. 
-N.B. Please see :ref:`nondimensional` fir a discussion about using these terms in dimensional vs non-dimensional form.
+**N.B.** Please see :ref:`nondimensional` for a discussion about using these terms in dimensional vs non-dimensional form.
 
 Momentum Equation
 """""""""""""""""
