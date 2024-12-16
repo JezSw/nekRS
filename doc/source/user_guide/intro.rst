@@ -18,11 +18,11 @@ form in as general a manner as possible, assuming the use of variable material
 properties for density, viscosity, specific heat capacity, and thermal
 conductivity that are functions of temperature:
 :math:`\rho=\rho(T)`, :math:`\mu=\mu(T)`, :math:`C_p=C_p(T)`, and :math:`k=k(T)`.
-For simplicity, the functional notation is omitted throughout. Table 
-:ref:`characteristic_quantities` provide some basic parameters for 
+For simplicity, the functional notation is omitted throughout. 
+:ref:`Table 1 <characteristic_quantities>` provides some basic parameters for 
 nondimensionalization in nekRS.
 
-.. table:: Physical meanings and NekRS interpretations of characteristic quantities
+.. table:: Characteristic quantities for non-dimensionalization
   :name:   characteristic_quantities
 
   ================== ============================ ================================================== 
