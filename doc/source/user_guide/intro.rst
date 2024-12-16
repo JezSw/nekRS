@@ -36,7 +36,7 @@ nondimensionalization in nekRS.
   ================== ============================ ==================================================
 
 Below are the nondimensional parameter in reference to table 
-:ref:`characteristic_quantities`.
+:ref:`Table 1 <characteristic_quantities>`.
 
 .. math::
 
