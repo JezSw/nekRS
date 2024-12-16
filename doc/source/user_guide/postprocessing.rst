@@ -262,16 +262,69 @@ Without further specifying, the ``mesh`` is predefined as ``auto mesh = nrs->mes
 Runtime Averaging
 """""""""""""""""
 
-tavg plugin
-   atime
+When running a high fidelity case with DNS or LES turbulence models, it is often
+necessary to time-average the solution fields to extract meaningful quantities.
+This may sometimes even be useful for a URANS case as well.  Similar to 
+`Nek5000's avg_all <https://nek5000.github.io/NekDoc/problem_setup/features.html?highlight=avg_all#averaging>`__,
+NekRS has ``tavg`` plugin (``../src/plugins/tavg.hpp``) that can compute
+:math:`E[u]:=\int_0^{time} u\ dt = \sum_i \Delta t\ u(i\Delta t)` where :math:`u`
+here is an arbitrary scalar field.
 
-Planar Averaging
+To set it up, one needs pass the list of ``tavgFields`` to the API ``tavg::setup``.
+Each entity in ``tavgFields`` is a vector of pointers that can have one to four
+scalar fields.
+For example, ``{o_w, o_w, o_temp}`` will compute the average of
+``E[ o_w[i]*o_w[i]*o_temp[i] ]``. The follow code is copied from the ``gabls1``
+example that will start the integral from ``time=10`` and dump a checkpoint
+file with prefix ``tavg`` and storing the duration of the integral into ``time``.
+The averaging period is also reset once the file is dump so each ``tavg`` checkpoint
+file stores the time averaged fields in each non-overlapped window.
 
-nusselt of space avg
-averaged
+.. code-block:: cpp
 
-Ask Vishal for example usage
+    #include "tavg.hpp"
 
+    void UDF_Setup()
+    {
+      std::vector<std::vector<deviceMemory<dfloat>>> tavgFields;
+  
+      deviceMemory<dfloat> o_u(nrs->o_U.slice(0 * nrs->fieldOffset , nrs->fieldOffset));
+      deviceMemory<dfloat> o_w(nrs->o_U.slice(2 * nrs->fieldOffset , nrs->fieldOffset));
+      deviceMemory<dfloat> o_temp(nrs->cds->o_S.slice(0 * nrs->cds->fieldOffset[0], nrs->cds->fieldOffset[0]));
+  
+      tavgFields.push_back({o_u}); // E[u] 
+      tavgFields.push_back({o_w}); // E[v]
+      tavgFields.push_back({o_temp}); // E[T]
+  
+      tavgFields.push_back({o_u, o_temp}); // E[uT]
+      tavgFields.push_back({o_w, o_temp}); // E[wT]
+      tavgFields.push_back({o_w, o_w, o_temp}); // E[w^2T]
+  
+      tavg::setup(nrs->fieldOffset, tavgFields);
+    }
+
+    void UDF_ExecuteStep(double time, int tstep)
+    {
+      if (nrs->timeStepConverged && time>=10.0) tavg::run(time); // sum
+      if (nrs->checkpointStep) tavg::outfld(mesh); // dump tavg file
+    }
+
+Often, one might want to compute other quantities on the top of time-averaged
+variables. The storage can be accessed via ``tavg::o_avg()``. For example, the
+code below copy the first three ``tavgFields`` into ``o_work``.
+
+.. code-block:: cpp
+
+    o_work.copyFrom(tavg::o_avg(), 3 * nrs->fieldOffset);
+
+
+TODO: mention that paraview struggles to open such file?
+
+TODO: Ask Vishal for example usage
+
+TODO: code other interface that doesn't reset atime.
+
+TODO: restart  
 
 Sample Points & Particle Tracking
 """""""""""""""""""""""""""""""""
@@ -282,20 +335,10 @@ particle tracking
 
 hpts()
 
+MPIIO custom output
+
 Legacy Support (userchk)
-""""""""""""""""""""""""
-
-
-Guideline for Custom Output
----------------------------
-
-stdout
-grep -v >>>
-flush cache to logfile
-MPIIO command
-Particles
-
-FIXME: remove this? leave a simple example under particles
+------------------------
 
 
 
