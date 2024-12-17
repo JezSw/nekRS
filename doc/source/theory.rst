@@ -47,28 +47,28 @@ or the no-stress formulation
 Non-Dimensional Navier-Stokes
 """""""""""""""""""""""""""""
 
-Let us introduce the following non-dimensional variables :math:`\mathbf x^\dagger = \frac{\mathbf x}{L}`, :math:`\mathbf u^\dagger = \frac{u}{U}`, :math:`t^\dagger = \frac{tU}{L}`, and :math:`\mathbf f^\dagger =\frac{\mathbf f L}{U^2}`.
+Let us introduce the following non-dimensional variables :math:`\mathbf x^* = \frac{\mathbf x}{L}`, :math:`\mathbf u^* = \frac{u}{U}`, :math:`t^* = \frac{tU}{L}`, and :math:`\mathbf f^* =\frac{\mathbf f L}{U^2}`.
 Where :math:`L` and :math:`U` are the (constant) characteristic length and velocity scales, respectively.
 For the pressure scale we have two options:
 
-- Convective effects are dominant i.e. high velocity flows :math:`p^\dagger = \frac{p}{\rho_0 U^2}`
-- Viscous effects are dominant i.e. creeping flows (Stokes flow) :math:`p^\dagger = \frac{p L}{\mu_0 U}`,
+- Convective effects are dominant i.e. high velocity flows :math:`p^* = \frac{p}{\rho_0 U^2}`
+- Viscous effects are dominant i.e. creeping flows (Stokes flow) :math:`p^* = \frac{p L}{\mu_0 U}`,
 
 where :math:`\rho_0` and :math:`\mu_0` are constant reference values for density and molecular viscosity, respectively.
 For highly convective flows we choose the first scaling of the pressure and obtain the non-dimensional Navier-Stokes in the no-stress formulation:
 
 .. math::
 
-    \frac{\partial \mathbf{u^\dagger}}{\partial t^\dagger} + \mathbf{u^\dagger} \cdot \nabla \mathbf{u^\dagger}\ = -\nabla p^\dagger + \frac{1}{Re}\Delta\mathbf u^\dagger + \mathbf f^\dagger.
+    \frac{\partial \mathbf{u^*}}{\partial t^*} + \mathbf{u^*} \cdot \nabla \mathbf{u^*}\ = -\nabla p^* + \frac{1}{Re}\Delta\mathbf u^* + \mathbf f^*.
 
-For the full-stress formulation, we further introduce the dimensionless viscosity, :math:`\mu^\dagger=\frac{\mu}{\mu_0}`, and obtain:
+For the full-stress formulation, we further introduce the dimensionless viscosity, :math:`\mu^*=\frac{\mu}{\mu_0}`, and obtain:
 
 .. math::
 
-    \frac{\partial \mathbf{u^\dagger}}{\partial t^\dagger} + \mathbf{u^\dagger} \cdot \nabla \mathbf{u^\dagger}\ = -\nabla p^\dagger + \frac{1}{Re}\nabla \cdot \left[ \mu^\dagger \left(\nabla\mathbf u^\dagger + \nabla\mathbf u^{\dagger T}\right)\right] + \mathbf f^\dagger,
+    \frac{\partial \mathbf{u^*}}{\partial t^*} + \mathbf{u^*} \cdot \nabla \mathbf{u^*}\ = -\nabla p^* + \frac{1}{Re}\nabla \cdot \left[ \mu^* \left(\nabla\mathbf u^* + \nabla\mathbf u^{* T}\right)\right] + \mathbf f^*,
 
 
-where :math:`\mathbf f^\dagger` is the dimensionless user defined forcing function.
+where :math:`\mathbf f^*` is the dimensionless user defined forcing function.
 The non-dimensional number here is the Reynolds number :math:`Re=\frac{\rho_0 U L}{\mu_0}`.
 
 Stokes Flow
@@ -108,14 +108,14 @@ where, :math:`\lambda` is the thermal conductivity and :math:`c_p` is the specif
 Non-Dimensional Energy / Passive Scalar Equation
 """"""""""""""""""""""""""""""""""""""""""""""""
 
-A similar non-dimensionalization as for the flow equations using the non-dimensional variables :math:`\mathbf x^\dagger = \frac{\mathbf x}{L}`,  :math:`\mathbf u^\dagger = \frac{u}{U}`, :math:`t^\dagger = \frac{tU}{L}`, :math:`T^\dagger=\frac{T-T_0}{\delta T}`, and :math:`\lambda^\dagger=\frac{\lambda}{\lambda_0}` leads to
+A similar non-dimensionalization as for the flow equations using the non-dimensional variables :math:`\mathbf x^* = \frac{\mathbf x}{L}`,  :math:`\mathbf u^* = \frac{u}{U}`, :math:`t^* = \frac{tU}{L}`, :math:`T^*=\frac{T-T_0}{\delta T}`, and :math:`\lambda^*=\frac{\lambda}{\lambda_0}` leads to
 
 .. math::
 
-    \frac{\partial T^\dagger}{\partial t^\dagger} + \mathbf u^\dagger \cdot \nabla T^\dagger =
-      \frac{1}{Pe} \nabla \cdot \lambda^\dagger \nabla T^\dagger + q^\dagger \,\,  \text{  (Energy)  } 
+    \frac{\partial T^*}{\partial t^*} + \mathbf u^* \cdot \nabla T^* =
+      \frac{1}{Pe} \nabla \cdot \lambda^* \nabla T^* + q^* \,\,  \text{  (Energy)  } 
 
-where :math:`q^\dagger=\frac{\dot{q} L}{\rho_0 c_{p_0} U \delta T}` is the dimensionless user defined source term.
+where :math:`q^*=\frac{\dot{q} L}{\rho_0 c_{p_0} U \delta T}` is the dimensionless user defined source term.
 The non-dimensional number here is the Peclet number, :math:`Pe=\frac{\rho_0 c_{p_0} U L}{\lambda_0}`.
 
 .. _low_mach:
@@ -153,32 +153,32 @@ Introducing the non-dimensional variables as follows,
 
 .. math::
 
-  \mathbf{u}^\dagger = \frac{\mathbf{u}}{U}; \,\, T^\dagger = \frac{T}{T_0}; \,\, \vec{x}^\dagger = \frac{\vec{x}}{L};\,\, p_1^\dagger = \frac{p_1}{\rho U^2};\,\, p_t^\dagger = \frac{p_t}{p_0};\,\, t^\dagger = \frac{t U}{L}; \vec{f}^\dagger = \frac{\vec{f}}{f_0} \\
-  \rho^\dagger = \frac{\rho}{\rho_0}; \,\, c_p^\dagger = \frac{c_p}{c_{p0}}; \,\, \lambda^\dagger =\frac{\lambda}{\lambda_0}; \,\, \mu^\dagger = \frac{\mu}{\mu_0}; \,\, \beta_T^\dagger = \frac{\beta_T}{\beta_0}; \,\, \kappa^\dagger = \frac{\kappa}{\kappa_0}; \,\, \dot{q}^\dagger = \frac{\dot{q} L}{\rho_0 c_{p0} T_0 U} 
+  \mathbf{u}^* = \frac{\mathbf{u}}{U}; \,\, T^* = \frac{T}{T_0}; \,\, \vec{x}^* = \frac{\vec{x}}{L};\,\, p_1^* = \frac{p_1}{\rho U^2};\,\, p_t^* = \frac{p_t}{p_0};\,\, t^* = \frac{t U}{L}; \vec{f}^* = \frac{\vec{f}}{f_0} \\
+  \rho^* = \frac{\rho}{\rho_0}; \,\, c_p^* = \frac{c_p}{c_{p0}}; \,\, \lambda^* =\frac{\lambda}{\lambda_0}; \,\, \mu^* = \frac{\mu}{\mu_0}; \,\, \beta_T^* = \frac{\beta_T}{\beta_0}; \,\, \kappa^* = \frac{\kappa}{\kappa_0}; \,\, \dot{q}^* = \frac{\dot{q} L}{\rho_0 c_{p0} T_0 U} 
 
 the low-Mach governing equations are obtained as follows. The continuity equation: 
 
 .. math::
 
-  \nabla \cdot \mathbf{u}^\dagger = \beta_0 T_0 \beta_t^\dagger \frac{D T^\dagger}{D t^\dagger} - \kappa_0 p_0 \kappa^\dagger \frac{d p_t^\dagger}{dt^\dagger} = Q^\dagger
+  \nabla \cdot \mathbf{u}^* = \beta_0 T_0 \beta_t^* \frac{D T^*}{D t^*} - \kappa_0 p_0 \kappa^* \frac{d p_t^*}{dt^*} = Q^*
 
 mometum equation,
 
 .. math::
 
-  \rho^\dagger \left(\frac{\partial \mathbf{u}^\dagger}{\partial t^\dagger} + \mathbf{u}^\dagger \cdot \nabla \mathbf{u}^\dagger\right) = - \nabla p_1^\dagger + \nabla \cdot \frac{\mu^\dagger}{Re} \left(2 \boldsymbol{\underline{S}}^\dagger - \frac{2}{3} Q^\dagger \boldsymbol{\underline{I}}\right) + \frac{1}{Fr} \rho^\dagger \mathbf{f}^\dagger
+  \rho^* \left(\frac{\partial \mathbf{u}^*}{\partial t^*} + \mathbf{u}^* \cdot \nabla \mathbf{u}^*\right) = - \nabla p_1^* + \nabla \cdot \frac{\mu^*}{Re} \left(2 \boldsymbol{\underline{S}}^* - \frac{2}{3} Q^* \boldsymbol{\underline{I}}\right) + \frac{1}{Fr} \rho^* \mathbf{f}^*
 
 and energy equation,
 
 .. math::
 
-  \rho^\dagger c_p^\dagger \frac{D T^\dagger}{D t^\dagger} = \nabla \cdot \frac{\lambda^\dagger}{Re Pr} \nabla T^\dagger + \dot{q}^\dagger + \frac{p_0}{\rho_0 c_{p0} T_0} \frac{d p_t^\dagger}{d t^\dagger}
+  \rho^* c_p^* \frac{D T^*}{D t^*} = \nabla \cdot \frac{\lambda^*}{Re Pr} \nabla T^* + \dot{q}^* + \frac{p_0}{\rho_0 c_{p0} T_0} \frac{d p_t^*}{d t^*}
 
 where :math:`U` and :math:`L` are the characteristic velocity and length scales. :math:`f_0` is reference magnitude of body force.
 :math:`p_0` and :math:`T_0` are the reference pressure and temperature, respectively, and :math:`\rho_0, \mu_0, c_{p0}, \lambda_0, \beta_0, \kappa_0` are the corresponding fluid properties (density, dynamic viscosity, specific heat at contant pressure, conductivity, isobaric expansion coefficient and isothermal expansion coefficient, respectively) at reference conditions. 
 
 :math:`Re=\rho_0 U L/\mu_0` is the Reynolds number, :math:`Pr = \mu_0 c_{p0}/\lambda_0` and :math:`Fr=U^2/f_0 L` are the Reynolds number, Prandtl number and Froude number, defined at reference conditions, respectively.
-The equations are closed by corresponding EOS in non-dimensional form, :math:`\rho^\dagger = f(p_t^\dagger,T^\dagger)`.
+The equations are closed by corresponding EOS in non-dimensional form, :math:`\rho^* = f(p_t^*,T^*)`.
 The above equations represent the lowMach equations in the most general form, applicable to real gases.
 Depending on the target application and associated assumptions, several simplifications to the equations are possible.
 In the subsequent section, we discuss the simplifications corresponding to the most commonly employed assumption, i.e., ideal gas assumption.
@@ -197,29 +197,29 @@ In non-dimensional form, considering the properties at reference conditions for 
 
 .. math::
 
-  p_t^\dagger = \rho^\dagger T^\dagger
+  p_t^* = \rho^* T^*
 
 The expansion coefficients, derived from the EOS, in non-dimensional form are,
 
 .. math::
 
-  \beta_T^\dagger = \frac{1}{T^\dagger} \,\, \kappa^\dagger = \frac{1}{p_t^\dagger}
+  \beta_T^* = \frac{1}{T^*} \,\, \kappa^* = \frac{1}{p_t^*}
 
 The resulting governing equations for ideal gas assumption, thus, are,
 
 .. math::
 
-  \nabla \cdot \mathbf{u}^\dagger &= \frac{1}{T^\dagger} \frac{D T^\dagger}{D t^\dagger} - \frac{1}{p_t^\dagger} \frac{d p_t^\dagger}{dt^\dagger} = Q^\dagger \\
-  \rho^\dagger \left(\frac{\partial \mathbf{u}^\dagger}{\partial t^\dagger} + \mathbf{u}^\dagger \cdot \nabla \mathbf{u}^\dagger\right) &= - \nabla p_1^\dagger + \nabla \cdot \frac{\mu^\dagger}{Re} \left(2 \boldsymbol{\underline{S}}^\dagger - \frac{2}{3} Q^\dagger \boldsymbol{\underline{I}}\right) + \frac{1}{Fr} \rho^\dagger \mathbf{f}^\dagger \\
-  \rho^\dagger c_p^\dagger \frac{D T^\dagger}{D t^\dagger} &= \nabla \cdot \frac{\lambda^\dagger}{Re Pr} \nabla T^\dagger + \dot{q}^\dagger + \frac{\gamma_0-1}{\gamma_0} \frac{d p_t^\dagger}{d t^\dagger}
+  \nabla \cdot \mathbf{u}^* &= \frac{1}{T^*} \frac{D T^*}{D t^*} - \frac{1}{p_t^*} \frac{d p_t^*}{dt^*} = Q^* \\
+  \rho^* \left(\frac{\partial \mathbf{u}^*}{\partial t^*} + \mathbf{u}^* \cdot \nabla \mathbf{u}^*\right) &= - \nabla p_1^* + \nabla \cdot \frac{\mu^*}{Re} \left(2 \boldsymbol{\underline{S}}^* - \frac{2}{3} Q^* \boldsymbol{\underline{I}}\right) + \frac{1}{Fr} \rho^* \mathbf{f}^* \\
+  \rho^* c_p^* \frac{D T^*}{D t^*} &= \nabla \cdot \frac{\lambda^*}{Re Pr} \nabla T^* + \dot{q}^* + \frac{\gamma_0-1}{\gamma_0} \frac{d p_t^*}{d t^*}
   
 .. note::
 
-  For a calorically perfect ideal gas, :math:`c_p` will be constant and non-dimensional :math:`c_p^\dagger = 1`.
+  For a calorically perfect ideal gas, :math:`c_p` will be constant and non-dimensional :math:`c_p^* = 1`.
 
 .. note::
 
-  Another often used assumption is to consider dynamic viscosity and thermal conductivity independent of temperature (constant). Thus, :math:`\mu^\dagger` and :math:`\lambda^\dagger` will both be unity, further simplifying the above equations.
+  Another often used assumption is to consider dynamic viscosity and thermal conductivity independent of temperature (constant). Thus, :math:`\mu^*` and :math:`\lambda^*` will both be unity, further simplifying the above equations.
 
 .. _rans_models:
 
