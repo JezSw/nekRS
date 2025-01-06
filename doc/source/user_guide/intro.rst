@@ -50,7 +50,7 @@ non-dimensional variables into the mass and momentum conservation equations give
 
 .. math:: 
   
-  \rho^* \rho_0 \left(\frac{\partial(u^* U)}{\partial(t^* (D/U))}+\frac{u^* U}{D}\cdot\nabla u^* U\right)=-\frac{1}{D} \nabla(P^* (\rho_0 U^2))+\frac{1}{D} \nabla\cdot\mu\left{\frac{1}{D} (\nabla(u^* U)+\nabla(u^* U)^T )\right}+\rho f
+  \rho^* \rho_0 \left( \frac{\partial (u^* U)}{\partial (t^* (D/U))} + \frac{u^* U}{D} \cdot \nabla u^* U \right) = -\frac{1}{D} \nabla \left(P^* (\rho_0 U^2)\right) + \frac{1}{D} \nabla \cdot \left(\frac{\mu}{D} \left(\nabla(u^* U) + \nabla(u^* U)^T \right)\right) + \rho f
 
 .. math:: 
   
