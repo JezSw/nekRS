@@ -18,6 +18,9 @@ References
 .. [Launder] Launder, B.E. and Spalding, D.B. "The Numerical Computation of Turbulent Flows,"
     *Computer Methods in Applied Mechanics and Engineering* **3** 269-289 (1974)
 
+.. [Mellen2000] Mellen, C. P., Fröhlich, J., Rodi, W. "Large-eddy simulation of the flow over periodic hills." *16th
+    IMACS World Congress*, Lausanne, Switzerland.
+
 .. [Persson] Persson, P.-O. and Peraire, J. "Sub-Cell Shock Capturing for Discontinuous Galerkin Methods",
    *44th AIAA Aerospace Sciences Meeting and Exhibit* (2006)
 
@@ -25,6 +28,3 @@ References
     *Flow Measurement and Instrumentation* **52** 101-114 (2016)
 
 .. [Wilcox] Wilcox, D.C. "Turbulence Modeling for CFD," *DCW Industries* (2006)
-
-.. [Mellen2000] Mellen, C. P., Fröhlich, J., Rodi, W. "Large-eddy simulation of the flow over periodic hills." *16th
-    IMACS World Congress*, Lausanne, Switzerland.
