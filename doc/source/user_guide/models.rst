@@ -494,13 +494,15 @@ The pointer must be assigned in ``UDF_Setup()`` routine as follows,
   #ifdef __okl__
     @kernel void buoForce(const dlong N,
                           const dlong offset,
+                          @restrict const dfloat *RHO,
                           @restrict const dfloat *g,
                           @restrict const dfloat *S,
                           @restrict dfloat *FU)
     {
       for (dlong n = 0; n < N; ++n; @tile(p_blockSize, @outer, @inner)) {
         if(n < N) {
-          const dfloat fac = - p_Ri * S[n];
+          const dfloat rho = RHO[n]; 
+          const dfloat fac = - p_Ri * rho * S[n];
           FU[n + 0 * offset] = fac * g[0];
           FU[n + 1 * offset] = fac * g[1];
           FU[n + 2 * offset] = fac * g[2];
@@ -516,8 +518,11 @@ The pointer must be assigned in ``UDF_Setup()`` routine as follows,
     auto mesh = nrs->mesh;
     auto cds = nrs->cds;
 
+    auto o_rho = nrs->o_prop + nrs->fieldOffset;
+
     buoForce(mesh->Nlocal, 
              nrs->fieldOffset,
+             o_rho,
              o_gvec,
              cds->o_S,
              nrs->o_NLT);
@@ -545,12 +550,10 @@ The above example illustrates a forcing kernel constructed for buoyancy driven s
 It includes a simple kernel, ``buoForce``, which assigns buoyancy acceleration along *negative y-coordinate* to demonstrate the indexing of ``nrs->o_NLT`` array.
 ``o_gvec`` is the occa array initialized in ``UDF_Setup`` to specify the user desired normal vector of gravity (negative y in the above example).
 ``p_Ri`` is the Richardson number which governs the scaling of the buoyancy force defined as a kernel directive in ``UDF_LoadKernels`` routine to make it available in the **okl block**.
+``o_rho`` defined in ``userf`` is a temporary occa array variable that points to the internal property array ``nrs->o_prop``.
+Note the offset that must be specified, ``nrs->fieldOffset``, to get the correct location of density.
 
 For constructing more complicated custom forces, the user is encouraged to familiarize with :ref:`okl block <okl_block>` for further details on writing okl kernels. 
-
-.. note::
-  
-  The ``nrs->o_NLT`` occa array is internally multiplied by density array before being added as a source term to the momentum equation.
 
 
 Implicit Linearized Momentum Source
@@ -588,12 +591,8 @@ The above nominal example demonstrates the following forcing term added implicit
   \vec{f} = \rho * coeff * \vec{v}
 
 where ``-coeff`` factor is returned as an array, ``o_F``, by the ``implicitForcing`` function. 
-``poolDeviceMemory<dfloat> o_F(mesh->Nlocal)`` reserves memory for ``o_F`` from the internally available pool memory of
-size ``mesh->Nlocal`` (equal to the local number of GLL points).  
+``poolDeviceMemory<dfloat> o_F(mesh->Nlocal)`` reserves memory for ``o_F`` from the internally available pool memory of size ``mesh->Nlocal`` (equal to the local number of GLL points).  
 
-.. note::
-
-  Density array is internally multiplied in NekRS to ``implicitForcing`` array before being added to the momentum equation.
 
 .. warning::
 
