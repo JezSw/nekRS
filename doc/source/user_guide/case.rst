@@ -184,6 +184,8 @@ the solution at regular intervals, and defining custom material properties and
 source terms. The available functions that you may define in the ``.udf`` file
 are as follows.
 
+.. _okl_block:
+
 OKL block
 """""""""
 

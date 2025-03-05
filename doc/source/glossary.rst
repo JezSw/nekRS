@@ -35,11 +35,17 @@ Glossary
     CPU
       Central Processing Unit
 
+    DES
+      Detached Eddy Simulation
+
     DPC++
       Data Parallel C++, an programming Language implementation of Intel's :term:`oneAPI` / :term:`SYCL`
 
     ENRICO
       Exascale Nuclear Reactor Investigative Code that couples nekRS to neutronics tools, see it on `github <https://github.com/enrico-dev/enrico>`__.
+
+    EOS
+      Equation of state
 
     FPGA
       Field-Programmable Gate Array
@@ -58,6 +64,9 @@ Glossary
 
     HPC
       High Performance Computing
+
+    LES
+      Large Eddy Simulation
 
     Metal
       Low-level, low-overhead hardware-accelerated 3D graphic and compute shader API created by Apple
@@ -92,6 +101,8 @@ Glossary
     SYCL
       A higher-level programming model for :term:`GPU`'s and other accelerators maintained by the Khronos Group
 
+    TKE
+      Turbulent kinetic energy
+
     UIUC
       The University of Illinois at Urbana-Champaign
-
