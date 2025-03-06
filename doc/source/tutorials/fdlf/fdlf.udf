@@ -89,11 +89,11 @@ void UDF_Setup0(MPI_Comm comm, setupAide &options)
 
 void UDF_Setup()
 {
-  auto mesh = nrs->meshV;
+  auto mesh = nrs->mesh;
 
   // adjust mesh
   {
-    auto rescale = [&](dfloat newMin, dfloat newMax, dfloat *x)
+    auto rescale = [&](dfloat newMin, dfloat newMax, std::vector<double> x)
     {
       auto min = std::numeric_limits<dfloat>::max();
       auto max = std::numeric_limits<dfloat>::lowest();
@@ -109,25 +109,33 @@ void UDF_Setup()
         x[i] = newMin + scale*(x[i] - min);
       }
     };
-    rescale(0.0, P_HEIGHT/2.0, mesh->y);
-    rescale(0.0, P_HEIGHT/2.0, mesh->z);
+    auto [x, y, z] = mesh->xyzHost();
+    rescale(0.0, P_HEIGHT/2.0, y);
+    rescale(0.0, P_HEIGHT/2.0, z);
   }
 
   // set IC 
   if (platform->options.getArgs("RESTART FILE NAME").empty()) {
+    auto [x, y, z] = mesh->xyzHost();
+    std::vector<dfloat> U(mesh->dim * nrs->fieldOffset, 0.0);
+    std::vector<dfloat> S(mesh->Nlocal, 0.0);
+
     for (int n = 0; n < mesh->Nlocal; n++) {
-      const auto x = mesh->x[n];
-      const auto y = mesh->y[n];
-      const auto z = mesh->z[n]; 
+      // const auto x = mesh->x[n];
+      // const auto y = mesh->y[n];
+      // const auto z = mesh->z[n]; 
 
-      const dfloat yhat2 = pow(y/P_HEIGHT,2);
+      const dfloat yhat2 = pow(y[n]/P_HEIGHT,2);
       const dfloat yhat4 = pow(yhat2,2);
-      nrs->U[n + 0 * nrs->fieldOffset] = P_UMEAN;
-      nrs->U[n + 1 * nrs->fieldOffset] = 0.0;
-      nrs->U[n + 2 * nrs->fieldOffset] = 0.0;
+      U[n + 0 * nrs->fieldOffset] = P_UMEAN;
+      U[n + 1 * nrs->fieldOffset] = 0.0;
+      U[n + 2 * nrs->fieldOffset] = 0.0;
 
-      nrs->cds->S[n + 0 * nrs->cds->fieldOffset[0]] = P_TIN;
+      S[n + 0 * nrs->cds->fieldOffset[0]] = P_TIN;
     }
+
+    nrs->o_U.copyFrom(U.data(), U.size());
+    nrs->cds->o_S.copyFrom(S.data(), S.size());
   }
 
 }
