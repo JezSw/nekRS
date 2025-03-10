@@ -36,10 +36,10 @@ Create two directories, ``lower`` and ``upper`` representing the two meshes then
 
 .. code-block:: console
 
-  $ genbox <<< upper.box
+  $ genbox <<< upper/upper.box
   $ mv box.re2 upper/upper.re2
-  $ genbox <<< lower.box
-  $ mv box.re2 lower/upper.re2
+  $ genbox <<< lower/lower.box
+  $ mv box.re2 lower/lower.re2
 
 :Reminder:
   ``genbox`` produces a file named ``box.re2``, so you will need to rename the files between generating the separate parts.
@@ -57,7 +57,7 @@ As for the mono-domain periodic hill case, we modify the mesh defining a functio
 
 .. literalinclude:: overlapping_overset_grids/hillnn.udf
    :language: c++
-   :lines: 38,43-48,58
+   :lines: 38,45-50,63
 
 .. _fig:hillnn_mesh:
 
@@ -74,7 +74,7 @@ For this case, we drive the flow using a constant acceleration term in ``userf``
 
 .. literalinclude:: overlapping_overset_grids/hillnn.udf
    :language: c++
-   :lines: 28-36,38,43-48,56,57,58
+   :lines: 28-36,38,45-50,60,62,63
    :emphasize-lines: 1-8,18
 
 Specifying NekNek and control parameters
