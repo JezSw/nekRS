@@ -45,6 +45,13 @@ files, and in some cases, careful usage of fixed-format text inputs, all
 Nek5000-based methods for case setup are referred to here as "legacy" approaches.
 All new users are encouraged to adopt the nekRS-based problem setup.
 
+.. tip::
+
+  Two legacy file types you may encounter are `.usr <https://nek5000.github.io/NekDoc/problem_setup/usr_file.html>`__ 
+  and `.co2 <https://nek5000.github.io/NekDoc/tutorials/multi_rans.html#generating-connectivity-file-co2>`__
+  files. Please follow the references to the Nek5000 documentation for further
+  information on these file types.
+
 .. _parameter_file:
 
 Parameter File (.par)
@@ -76,7 +83,7 @@ The valid sections for setting up a nekRS simulation are:
 * ``PRESSURE``: settings for the pressure solution
 * ``PROBLEMTYPE``: settings for the governing equations
 * ``SCALARXX``: settings for the ``XX``-th scalar
-* ``TEMPERATURE``: settings for the temperature solution
+* ``TEMPERATURE``: settings for the temperature solution (N.B. This is equivalent to SCALAR00)
 * ``VELOCITY``: settings for the velocity solution
 * ``CASEDATA``: custom settings
 
