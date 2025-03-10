@@ -45,6 +45,13 @@ files, and in some cases, careful usage of fixed-format text inputs, all
 Nek5000-based methods for case setup are referred to here as "legacy" approaches.
 All new users are encouraged to adopt the nekRS-based problem setup.
 
+.. tip::
+
+  Two legacy file types you may encounter are `.usr <https://nek5000.github.io/NekDoc/problem_setup/usr_file.html>`__ 
+  and `.co2 <https://nek5000.github.io/NekDoc/tutorials/multi_rans.html#generating-connectivity-file-co2>`__
+  files. Please follow the references to the Nek5000 documentation for further
+  information on these file types.
+
 .. _parameter_file:
 
 Parameter File (.par)
@@ -76,22 +83,64 @@ The valid sections for setting up a nekRS simulation are:
 * ``PRESSURE``: settings for the pressure solution
 * ``PROBLEMTYPE``: settings for the governing equations
 * ``SCALARXX``: settings for the ``XX``-th scalar
-* ``TEMPERATURE``: settings for the temperature solution
+* ``TEMPERATURE``: settings for the temperature solution (N.B. This is equivalent to SCALAR00)
 * ``VELOCITY``: settings for the velocity solution
 * ``CASEDATA``: custom settings
 
 Each of the keys and value types are described below. 
 
-**TODO** Description of keys in table
+nekRS supports both traditional CPU-based architectures and accelerated 
+computing on GPUs. In the ``OCCA`` section, users can select various backend options, 
+such as the ``serial`` mode for CPU-only computations, ``CUDA`` for accelerated 
+computing with Nvidia GPUs, or ``HIP`` for AMD GPUs.
 
 .. code-block:: cpp
 
   std::string user_occa_backend;
   options.getArgs("THREAD MODEL", user_occa_backend);
 
-In other words, if you have ``backend = CUDA`` in the ``.par`` file, then
+As shown in snippet above, if you have ``backend = CUDA`` in the ``.par`` file, then
 ``user_occa_backend`` would be set to ``CUDA`` in the above code.
 
+In the ``GENERAL`` section, key settings include configuring the simulation's polynomial 
+order (``polynomialOrder``), restart options, and time iteration parameters. For nekRS 
+simulations, a recommended polynomial order is ``p=7``, though the software currently 
+supports orders ranging from 2 to 11. By default, nekRS uses the user-specified initial 
+conditions provided in the ``udf`` file to begin computations. However, the ``startFrom`` 
+option allows users to provide a restart file as the initial condition for continuing 
+simulations. Additional arguments can be used to specify which fields from the restart 
+file should be used.
+
+To configure the stop criteria for time iterations in the simulation, the user can set 
+the ``stopAt`` parameter to either ``numSteps``, ``endTime``, or ``elapsedTime``, 
+depending on whether the simulation should stop after a specific number of time steps, 
+a certain end time, or the total elapsed time.
+The frequency at which checkpoint files are saved is controlled by the ``checkpointControl`` 
+and ``checkpointInterval`` parameters. The user can specify this frequency based on 
+either a set number of time steps or a simulation time interval.
+Additionally, the user can select the time-stepping order (i.e., the order of the 
+backward difference scheme for time discretization) by setting ``timeStepper`` 
+to one of the following: ``tombo1`` for first-order, ``tombo2`` (the default) for 
+second-order, or ``tombo3`` for third-order accuracy.
+
+There are dedicated sections for configuring the solution of fields such as pressure, 
+velocity, temperature, and passive scalars. Common input parameters across these 
+sections include ``residualTol``, ``boundaryTypeMap``, as well as advection and 
+diffusion coefficients. These coefficients may have different names depending 
+on the field, such as ``rho`` and ``viscosity`` for ``[VELOCITY]``, or ``rhoCp`` 
+and ``conductivity`` for ``[TEMPERATURE]``.
+
+The ``.par`` file also allows users to apply ``regularization`` to simulations. 
+This provides a convenient way to set up a large eddy simulation (LES) using the ``hpfrt``
+(i.e., high-pass filter), or to introduce the artificial viscosity
+(``avm``) to a solution field.
+
+For advanced users, nekRS offers additional pressure preconditioners and coarse 
+mesh solvers that can be explored and fine-tuned through parameters such as 
+``preconditioner``, ``coarseGridDiscretization``, and ``smootherType`` to 
+optimize simulation efficiency. The default settings, however, provide a well-balanced 
+configuration suitable for basic users.
+ 
 Generally, most ``.par`` settings are not saved to a data structure, so throughout the code
 base, whenever information from the ``.par`` file is needed, it is simply
 extracted on-the-fly via the ``options`` structure.
@@ -184,6 +233,8 @@ the solution at regular intervals, and defining custom material properties and
 source terms. The available functions that you may define in the ``.udf`` file
 are as follows.
 
+.. _okl_block:
+
 OKL block
 """""""""
 
@@ -239,7 +290,7 @@ exact values at a specified time point.
 UDF_Setup0
 """"""""""
 
-This user-defined function is passed the nekRS :term:`MPI` communicator ``comm`` and a data
+This user-defined function is passed to the nekRS :term:`MPI` communicator ``comm`` and a data
 structure containing all of the user-specified simulation options, ``options``. This function is
 called once at the beginning of the simulation *before* initializing the nekRS internals
 such as the mesh, solvers, and solution data arrays. Because virtually no aspects of
