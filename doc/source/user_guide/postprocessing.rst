@@ -51,6 +51,8 @@ A more flexible approach is to dump all desired fields into a separate file.
 This is handled by the ``iofld`` class (``src/core/io/iofld.hpp``)
 and the following example shows the common APIs:
 
+.. FIXME: add vector example between scalar00 and velocityscalar00
+
 .. code-block:: cpp
 
     // UDF global variable
@@ -63,7 +65,6 @@ and the following example shows the common APIs:
     iofld->writeAttribute("polynomialOrder", std::to_string(mesh->N + 2));
 
     iofld->addVariable("scalar00", std::vector<deviceMemory<dfloat>>{nrs->o_rho});
-    // FIXME: add vector example
     iofld->addVariable("velocityscalar00", std::vector<deviceMemory<dfloat>>{nrs->o_NLT});
 
     // UDF_ExecuteStep
@@ -120,7 +121,7 @@ custom fields.
 Built-in Operators
 """"""""""""""""""
 
-TODO: maybe have an example?
+.. TODO: maybe have an example?
 
 Without further specifying, the ``mesh`` is predefined as ``auto mesh = nrs->mesh;``
 
@@ -318,24 +319,24 @@ code below copy the first three ``tavgFields`` into ``o_work``.
     o_work.copyFrom(tavg::o_avg(), 3 * nrs->fieldOffset);
 
 
-TODO: mention that paraview struggles to open such file?
+.. TODO: mention that paraview struggles to open such file?
 
-TODO: Ask Vishal for example usage
+.. TODO: Ask Vishal for example usage
 
-TODO: code other interface that doesn't reset atime.
+.. TODO: code other interface that doesn't reset atime.
 
-TODO: restart  
+.. TODO: restart  
 
 Sample Points & Particle Tracking
 """""""""""""""""""""""""""""""""
 
-plot over lines
+.. plot over lines
 
-particle tracking
+.. particle tracking
 
-hpts()
+.. hpts()
 
-MPIIO custom output
+.. MPIIO custom output
 
 Legacy Support (userchk)
 ------------------------
@@ -347,8 +348,8 @@ Legacy Support (userchk)
 ADIOS2 Format
 -------------
 
-FIXME: limitation: adios2 not supported elementFilter
-FIXME: adios2, flex variable names
+.. FIXME: limitation: adios2 not supported elementFilter
+.. FIXME: adios2, flex variable names
 
 Starting from v24, the iofld class is introduced to handle reading and writing
 files. This includes the `ADIOS2 <https://adios2.readthedocs.io>`__ support and
@@ -404,18 +405,18 @@ in ``connectivity`` whos coordinates are stored in ``vertices``.
 All scalar fields and vectors fields are then represented on those ``numOfPoints=2007040``
 points.
 
-ParaView Reader
-VisIt (issue)
+.. ParaView Reader
+.. VisIt (issue)
 
 On HPC, one might want to use
 ``export ADIOS2_INSTALL_DIR=<path-to-adios2>``
-ENABLE_ADIOS FIXME: move to installation
+.. ENABLE_ADIOS FIXME: move to installation
 
-ADIOS2 format is more flexicle in the sense that it allows user to name the
+ADIOS2 format is more flexible in the sense that it allows user to name the
 variables freely as an additional field. Here is an example of dumping a file contains
 ``velocity`` vector and a scalar field of ``q_criterion``.
 
-TODO: add link to file
+.. TODO: add link to file
 
 - Global variables
 
@@ -467,8 +468,8 @@ TODO: add link to file
 In-Situ Visualization
 ---------------------
 
-link to Ascent
-installation, hpc, docker,
-gpu, vtkh
-add paper?
+.. link to Ascent
+.. installation, hpc, docker,
+.. gpu, vtkh
+.. add paper?
 
