@@ -18,7 +18,7 @@ Glossary
       Application Programming Interface
 
     AVM
-      Artificial Viscosity Method described in [Persson]_
+      Artificial Viscosity Method described in [Persson2006]_
 
     BDF
       Backward Differentiation Formula
