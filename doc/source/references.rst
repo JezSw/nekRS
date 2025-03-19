@@ -15,16 +15,15 @@ References
 
 .. [Kumar2024] Kumar, Vishal, et al. "DDES Study of Confined and Unconfined NACA Wing Sections Using Spectral Elements." *arXiv preprint arXiv:2410.05561* (2024).
 
-.. [Launder] Launder, B.E. and Spalding, D.B. "The Numerical Computation of Turbulent Flows,"
-    *Computer Methods in Applied Mechanics and Engineering* **3** 269-289 (1974)
+.. [Launder] Launder, B.E. and Spalding, D.B. "The Numerical Computation of Turbulent Flows," *Computer Methods in Applied Mechanics and Engineering* **3** 269-289 (1974)
 
-.. [Persson] Persson, P.-O. and Peraire, J. "Sub-Cell Shock Capturing for Discontinuous Galerkin Methods",
-   *44th AIAA Aerospace Sciences Meeting and Exhibit* (2006)
+.. [Lund1998] Lund, Thomas S., Xiaohua Wu, and Kyle D. Squires. "Generation of turbulent inflow data for spatially-developing boundary layer simulations." *Journal of computational physics 140.2* (1998): 233-258.
+
+.. [Persson] Persson, P.-O. and Peraire, J. "Sub-Cell Shock Capturing for Discontinuous Galerkin Methods", *44th AIAA Aerospace Sciences Meeting and Exhibit* (2006)
 
 .. [Paulucci1982] Paulucci, S. "On the filtering of sound from the navier-stokes equations, sandia national labs." *Technical Report. Sandia National Laboratories* (1982)
 
-.. [Russo] Russo, F. and Basse, N.T. "Scaling of Turbulence Intensity for Low-Speed FLow in Smooth Pipes,"
-    *Flow Measurement and Instrumentation* **52** 101-114 (2016)
+.. [Russo] Russo, F. and Basse, N.T. "Scaling of Turbulence Intensity for Low-Speed FLow in Smooth Pipes," *Flow Measurement and Instrumentation* **52** 101-114 (2016)
 
 .. [Schlatter2006] Schlatter, P., Stolz, S., and Kleiser, L., "Analysis of the SGS energy budget for deconvolution- and relaxation-based models in channel flow", in *Direct and Large-Eddy Simulation VI, pp. 135--142, Springer, Dordrecht, 2006. `doi.org/10.1007/978-1-4020-5152-2_15 <https://doi.org/10.1007/978-1-4020-5152-2_15>`* (2005)
 
