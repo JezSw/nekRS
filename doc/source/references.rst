@@ -35,7 +35,7 @@ References
 
 .. [Tombo1997] Tomboulides, A. G., J. C. Y. Lee, and S. A. Orszag. "Numerical simulation of low Mach number reactive flows". *Journal of Scientific Computing 12: 139-167.* (1997)
 
-.. [Tombo2024] Tomboulides, Ananias, Nadish Saini, Dillon Shaver, Aleksandr Obabko, Haomin Yuan, Elia Merzari, and Paul Fischer. "A Robust Spectral Element Implementation of the K–Τ Rans Model in Nek5000/Nekrs." *Available at SSRN 4785448.* (2024)
+.. [Tombo2025] Tomboulides, A., Saini, N., Shaver, D. R., Obabko, A. V., Yuan, H., Merzari, E., & Fischer, P. F. (2025). "A robust spectral element implementation of the k− τ RANS model in Nek5000/NekRS" *International Journal of Heat and Fluid Flow, 112, 109679.*
 
 .. [Wilcox] Wilcox, D.C. "Turbulence Modeling for CFD," *DCW Industries* (2006)
 

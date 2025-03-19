@@ -82,7 +82,7 @@ The required code snippet is shown below.
    :lines: 162-198
    
 The ``rans_init`` subroutine sets up the necessary solver variables to use RANS models. 
-This includes loading the model coefficients, setting up the character boundary condition (``cbc``) array for the turbulent scalars, and calculating the regularization [Tombo2018]_ for the :math:`k-\omega` models.
+This includes loading the model coefficients, setting up the character boundary condition (``cbc``) array for the turbulent scalars, and calculating the regularization [Tombo2025]_ for the :math:`k-\omega` models.
 The ``ifld_tke`` and ``ifld_tau`` variables specify the field index location of the transport variables of the two-equation RANS model. 
 The specific RANS model used is identified by the ``m_id`` variable. 
 All available RANS models are annotated in the above code. 

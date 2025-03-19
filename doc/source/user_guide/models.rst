@@ -154,7 +154,7 @@ RANS models
   simulation
 
 The essential routines for the :term:`RANS` models in NekRS are available in the namespace in ``src/nrs/plugins/RANSktau.hpp``.
-The default RANS model in nekRS is the :math:`k`-:math:`\tau` model [Tombo2024]_.
+The default RANS model in nekRS is the :math:`k`-:math:`\tau` model [Tombo2025]_.
 Details on the formulation of the :math:`k`-:math:`\tau` can be found :ref:`here <rans_models>`.
 
 To use the :term:`RANS` model in nekRS, first add the necessary include file at the top of your ``.udf`` file:

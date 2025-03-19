@@ -226,7 +226,7 @@ The resulting governing equations for ideal gas assumption, thus, are,
 RANS Models
 -----------
 
-For turbulence modeling :term:`nekRS` offers the two-equation :math:`k`-:math:`\tau` :term:`RANS` model [Tombo2024]_ and its :term:`SST` and :term:`DES` variants [Kumar2024]_.
+For turbulence modeling :term:`nekRS` offers the two-equation :math:`k`-:math:`\tau` :term:`RANS` model [Tombo2025]_ and its :term:`SST` and :term:`DES` variants [Kumar2024]_.
 Linear two-equation RANS models rely on the Bousinessq approximation which relates the Reynolds stress tensor to the mean strain rate, :math:`\boldsymbol{\underline {S}}`, linearly through eddy viscosity.
 The time-averaged momentum equation is given as,
 
@@ -289,7 +289,7 @@ The final term in the :math:`\tau` equation is the cross-diffusion term, introdu
   C_{D_\tau} =(\rho \sigma_d \tau) \text{min}(\nabla k \cdot \nabla \tau,0)
 
 The above term is especially relevant for external flows.
-It eliminates non-physical free-stream dependence of the near-wall :math:`\tau` field (see [Tombo2024]_ for details).
+It eliminates non-physical free-stream dependence of the near-wall :math:`\tau` field (see [Tombo2025]_ for details).
 
 All coefficients in the :math:`k-\tau` model are identical to the standard :math:`k-\omega` model [Wilcox2008]_, given as,
 
@@ -297,7 +297,7 @@ All coefficients in the :math:`k-\tau` model are identical to the standard :math
 
   \beta = 0.0708; \,\, \beta^*=0.09; \,\, \alpha=0.52; \,\, \sigma_k= \frac{1}{0.6} \,\, \sigma_\tau=2.0; \,\, \sigma_d=\frac{1}{8}
 
-Further theoretical and implementation details on the :math:`k`-:math:`\tau` model can be found in [Tombo2024]_.
+Further theoretical and implementation details on the :math:`k`-:math:`\tau` model can be found in [Tombo2025]_.
 
 .. note::
 
