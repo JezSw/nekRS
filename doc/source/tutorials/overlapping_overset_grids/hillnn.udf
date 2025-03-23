@@ -1,0 +1,65 @@
+static int P_INTERPOLATED_BC_ID;
+
+#ifdef __okl__
+void codedFixedValueVelocity(bcData *bc) {
+  if(bc->id == p_interpolated_bc_id) {
+    bc->u = bc->uinterp;
+    bc->v = bc->vinterp;
+    bc->w = bc->winterp;
+  } else {
+    bc->u = 0.0;
+    bc->v = 0.0;
+    bc->w = 0.0;
+  }
+}
+#endif
+
+void UDF_LoadKernels(deviceKernelProperties& kernelInfo)
+{
+   setupAide& options = platform->options;
+   kernelInfo.define("p_interpolated_bc_id") = P_INTERPOLATED_BC_ID;
+}
+
+void UDF_Setup0(MPI_Comm comm, setupAide &options)
+{
+  platform->par->extract("casedata", "interpolated_bc_id", P_INTERPOLATED_BC_ID);
+}
+
+void userf(double time) {
+  const dfloat ffx{0.052};
+
+  // Get x component of non-linear momentum array
+  // using offset of 0
+  auto o_FUx = nrs->o_NLT + 0 * nrs->fieldOffset;
+  platform->linAlg->fill(nrs->mesh->Nlocal, ffx, o_FUx);
+}
+
+
+void UDF_Setup() {
+  auto mesh = nrs->mesh;
+  auto [x, y, z] = mesh->xyzHost();
+  std::vector<dfloat> U(mesh->dim * nrs->fieldOffset, 0.0);
+
+  const dfloat A{4.5}, B{3.5}, C{1./6};
+
+  // mesh modification
+  for(int i{0}; i < mesh->Nlocal; ++i) {
+    const dfloat argx{B * (std::abs(x[i] - A) - B)};
+    const dfloat A1{C * (1. + std::tanh(argx))};
+    y[i] = y[i] + A1 * (3. - y[i]);
+  }
+
+  mesh->o_y.copyFrom(y.data());
+
+  // initial conditions
+  for(int i{0}; i < mesh -> Nlocal; ++i) {
+    U[i + 0 * nrs->fieldOffset] = 1.0;
+    U[i + 1 * nrs->fieldOffset] = 0.0;
+    U[i + 2 * nrs->fieldOffset] = 0.0;
+  }
+
+  nrs->o_U.copyFrom(U.data(), U.size());
+  nrs->userVelocitySource = &userf;
+}
+
+void UDF_ExecuteStep(double time, int tstep) {}
