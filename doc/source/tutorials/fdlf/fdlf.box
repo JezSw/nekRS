@@ -11,4 +11,4 @@ Box                                       fdlf
 0.0 0.005 0.7                             y0 y1 ratio
 0.0 1.0 1.0                               z0 z1 ratio
 v  ,O  ,SYM,W  ,P  ,P                     Velocity BC's:  (cbx0, cbx1, cby0, cby1, cbz0, cbz1)
-t  ,O  ,I  ,f  ,P  ,P                     Temperature BC's:  (cbx0, cbx1, cby0, cby1, cbz0, cb1)
+t  ,O  ,I  ,f  ,P  ,P                     Temperature BC's:  (cbx0, cbx1, cby0, cby1, cbz0, cbz1)
